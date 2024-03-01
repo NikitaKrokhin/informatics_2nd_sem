@@ -1,0 +1,50 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+ 
+ 
+using namespace std;
+ 
+struct Man
+{
+    string FirstName;
+ 
+};
+ 
+ 
+void resize(int &size, Man *&arr) {//функция для увеличения массива
+    size_t newSize = size + 1;
+    Man* newArr = new Man[newSize];
+ 
+    std::copy(arr, arr + size, newArr);
+ 
+    size = newSize;
+    delete[] arr;
+    arr = newArr;
+ 
+}
+ 
+ 
+int main()
+{
+ 
+    int size = 3;
+    Man* arr = new Man[size];
+ 
+    for (size_t i = 0; i < size; i++)//заполнние и вывод массива
+    {
+        arr[i].FirstName = "SomeName";
+        cout << arr[i].FirstName << endl;
+    }
+ 
+    resize(size, arr);
+ 
+    for (size_t i = 0; i < size; i++)
+    {
+        arr[i].FirstName = "n1";
+        cout << arr[i].FirstName << endl;
+    }
+    
+    delete[] arr;
+ 
+}
