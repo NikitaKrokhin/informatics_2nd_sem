@@ -24,7 +24,7 @@ void realloc(figure *&number,int &size_arr);
 void clean();
 void coord_figure(figure *number,int i);
 double find_max_element(figure *number,int size_arr,int type);
-int init_var();
+void ignoreLine();
 
 int main()
 {
@@ -35,6 +35,11 @@ int main()
     do{
         cout << "Сколько многугольников существует?"<<endl;
         cin>>size_arr;
+        while (cin.fail()) {
+            ignoreLine();
+            cout << "Пожалуйста введите число а не символ!" << endl;
+            cin >> size_arr;
+        }
         if(size_arr>0){
             check=0;
         }else{
@@ -55,20 +60,14 @@ int main()
         cout<<"0-Закончить работу"<<endl;
         cout << "Введите действие: ";
         int check1=0;
-        do{
-            num=init_var();
-            cout <<"num: "<<num;
 
-            for(int f=0;f<6;f++){
-                if(num==f){
-                    check1++;
-                }
+            cin >> num;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> num;
             }
-            if(check1!=1){
-                cout<<endl;
-                cout<<"Неверно введены данные повторите попытку"<<endl;
-            }
-        }while(check1!=1);
+
         clean();
         if(num==1){
             clean();
@@ -90,6 +89,11 @@ int main()
             cout<<"2-Вывод максимального периметра многоугольника"<<endl;
             cout<<"3-Вернутся в меню"<<endl;
             cin>>num_p;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> num_p;
+            }
             clean();
             if(num_p==1){
                 cout << "Максимальная площадь:" << find_max_element(p_number,size_arr,1)<<endl;
@@ -120,6 +124,11 @@ int main()
             cout<<"1-ДА"<<endl;
             cout<<"0-НЕТ"<<endl;
             cin>>num;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> num;
+            }
             num--;
             clean();
         }
@@ -170,18 +179,16 @@ void input(figure *number,int size_arr){
 
     check=1;
     double R=number[i].lenght_side/(2*sin(M_PI/number[i].count_side));
-    double k=atan2(number[i].x,number[i].y);
-    double xc=R*cos(k);
-    double yc=R*sin(k);
 
     do{
         cout <<"Введите координату x ";
-        cout <<"не меньше чем " << xc << endl;
+        double p_x=R;
+        cout <<"не меньше чем " << R << endl;
         cin >>number[i].x;
         cout <<"Введите координату y\n";
-        cout <<"не меньше чем " << yc << endl;
+        double p_y=sqrt(number[i].x*number[i].x-R*R);
+        cout <<"не меньше чем " << p_y << endl;
         cin >>number[i].y;
-        double R=number[i].lenght_side/(2*sin(M_PI/number[i].count_side));
         double pR=sqrt(number[i].x*number[i].x+number[i].y*number[i].y);
         if(R<pR){
             check=0;
@@ -347,8 +354,8 @@ void coord_figure(figure *number,int i){
     }
     cout << endl;
 }
-int init_var(){
-    cin.get();
-    char a=cin.get();
-    return(int(a)-48);
+void ignoreLine()
+{
+    cin.clear();
+    cin.ignore();
 }
