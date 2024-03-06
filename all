@@ -49,23 +49,35 @@ int main()
 
     figure *p_number = new figure[size_arr];
 
-
+    int check_3=0;
     int num=0;
     do{
         cout<<"1-Ввод данных многоугольника"<<endl;
         cout<<"2-Вывод данных многоугольника"<<endl;
-        cout<<"3-Вывод MAX_S и MAX_P"<<endl;
+        int count_flag=0;
+        for(int i=0;i<size_arr;i++){
+            count_flag=count_flag+p_number[i].flag;
+        }
+        if(count_flag==size_arr){
+            cout<<"3-Вывод MAX_S и MAX_P"<<endl;
+        }else{
+            cout<<"Вывод MAX_S и MAX_P недоступен,т.к введены данные не о всех многоугольниках"<<endl;
+            int check_3=1;
+        }
         cout<<"4-Удаление записи о многоугольнике"<<endl;
         cout<<"5-Добавить ячейку для нового многоугольника"<<endl;
         cout<<"0-Закончить работу"<<endl;
         cout << "Введите действие: ";
-        int check1=0;
+
 
             cin >> num;
             while (cin.fail()) {
                 ignoreLine();
                 cout << "Пожалуйста введите число а не символ!" << endl;
                 cin >> num;
+            }
+            if((num==3)&&(check_3!=0)){
+                num=10;
             }
 
         clean();
@@ -77,7 +89,7 @@ int main()
         else if(num==2){
             clean();
             output(p_number,size_arr);
-            cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
             //добавить возврашение в меню при нажатии любой клавишы
             cin.get();
             cin.get();
@@ -118,9 +130,15 @@ int main()
             clean();
         }else if(num==5){
             realloc(p_number,size_arr);
+            cout <<"Добавленна ячейка для нового многоугольника!"<<endl;
+            cout <<"Количество записей о многоугольниках: "<< size_arr<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+                cin.get();
+                cin.get();
+                clean();
         }
         if(num==0){
-            cout<<"Точно хотите завершить рабуоту?"<<endl;
+            cout<<"Точно хотите завершить работу?"<<endl;
             cout<<"1-ДА"<<endl;
             cout<<"0-НЕТ"<<endl;
             cin>>num;
@@ -182,11 +200,10 @@ void input(figure *number,int size_arr){
 
     do{
         cout <<"Введите координату x ";
-        double p_x=R;
-        cout <<"не меньше чем " << R << endl;
         cin >>number[i].x;
         cout <<"Введите координату y\n";
-        double p_y=sqrt(number[i].x*number[i].x-R*R);
+        double L=acos(R/number[i].x);
+        double p_y=R*sin(L);
         cout <<"не меньше чем " << p_y << endl;
         cin >>number[i].y;
         double pR=sqrt(number[i].x*number[i].x+number[i].y*number[i].y);
@@ -218,7 +235,7 @@ void output(figure *number,int size_arr){
     int i;
     cout << "Данные какого многоугольника выводить?"<<endl; //исправить
     cin >> i;
-    if(i>size_arr){
+    if((i>size_arr)||(i<=0)){
         cout<<"Данные многоугольника "<<i<<" не существуют!"<<endl;
         return;
     }
@@ -359,3 +376,4 @@ void ignoreLine()
     cin.clear();
     cin.ignore();
 }
+
