@@ -12,19 +12,19 @@ struct figure{
     double P;
     double x;
     double y;
+    int flag=0;
 };
 
-void delete_number(figure *number,int size_arr);
+void delete_number(figure *number,int &size_arr);
 void input(figure *number,int size_arr);
 void square(figure *number,int i);
 void perimeter(figure *number,int i);
-void output(figure *number);
+void output(figure *number,int size_arr);
 void realloc(figure *&number,int &size_arr);
-double get_max_S(figure *number,int size_arr);
-double get_max_P(figure *number,int size_arr);
 void clean();
 void coord_figure(figure *number,int i);
 double find_max_element(figure *number,int size_arr,int type);
+int init_var();
 
 int main()
 {
@@ -34,7 +34,7 @@ int main()
     int check=1;
     do{
         cout << "Сколько многугольников существует?"<<endl;
-        cin >> size_arr;
+        cin>>size_arr;
         if(size_arr>0){
             check=0;
         }else{
@@ -44,7 +44,6 @@ int main()
 
     figure *p_number = new figure[size_arr];
 
-    //cout << sizeof(p_number);
 
     int num=0;
     do{
@@ -55,7 +54,21 @@ int main()
         cout<<"5-Добавить ячейку для нового многоугольника"<<endl;
         cout<<"0-Закончить работу"<<endl;
         cout << "Введите действие: ";
-        cin>>num;
+        int check1=0;
+        do{
+            num=init_var();
+            cout <<"num: "<<num;
+
+            for(int f=0;f<6;f++){
+                if(num==f){
+                    check1++;
+                }
+            }
+            if(check1!=1){
+                cout<<endl;
+                cout<<"Неверно введены данные повторите попытку"<<endl;
+            }
+        }while(check1!=1);
         clean();
         if(num==1){
             clean();
@@ -64,7 +77,7 @@ int main()
         }
         else if(num==2){
             clean();
-            output(p_number);
+            output(p_number,size_arr);
             cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
             //добавить возврашение в меню при нажатии любой клавишы
             cin.get();
@@ -81,14 +94,14 @@ int main()
             if(num_p==1){
                 cout << "Максимальная площадь:" << find_max_element(p_number,size_arr,1)<<endl;
                 //добавить возврашение в меню при нажатии любой клавишы
-                cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+                cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
                 cin.get();
                 cin.get();
                 clean();
             }else if(num_p==2){
                 cout << "Максимальный периметр:" << find_max_element(p_number,size_arr,2)<<endl;
                 //добавить возврашение в меню при нажатии любой клавишы
-                cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+                cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
                 cin.get();
                 cin.get();
                 clean();
@@ -101,6 +114,14 @@ int main()
             clean();
         }else if(num==5){
             realloc(p_number,size_arr);
+        }
+        if(num==0){
+            cout<<"Точно хотите завершить рабуоту?"<<endl;
+            cout<<"1-ДА"<<endl;
+            cout<<"0-НЕТ"<<endl;
+            cin>>num;
+            num--;
+            clean();
         }
     }while(num!=0);
     cout << "Работа завершена!"<<endl;
@@ -148,11 +169,17 @@ void input(figure *number,int size_arr){
     }while(check!=0);
 
     check=1;
+    double R=number[i].lenght_side/(2*sin(M_PI/number[i].count_side));
+    double k=atan2(number[i].x,number[i].y);
+    double xc=R*cos(k);
+    double yc=R*sin(k);
 
     do{
-        cout <<"Введите координату x\n";
+        cout <<"Введите координату x ";
+        cout <<"не меньше чем " << xc << endl;
         cin >>number[i].x;
         cout <<"Введите координату y\n";
+        cout <<"не меньше чем " << yc << endl;
         cin >>number[i].y;
         double R=number[i].lenght_side/(2*sin(M_PI/number[i].count_side));
         double pR=sqrt(number[i].x*number[i].x+number[i].y*number[i].y);
@@ -163,13 +190,15 @@ void input(figure *number,int size_arr){
         }
     }while(check!=0);
 
+    number[i].flag=1;
+
     square(number,i);
     perimeter(number,i);
 
 }
 void square(figure *number,int i){
     if(number[i].count_side==3){
-        number[i].S=(number[i].lenght_side*number[i].lenght_side)*sqrt(3)/2;
+        number[i].S=(number[i].lenght_side*number[i].lenght_side)*(sqrt(3)/2);
     }
     else if(number[i].count_side==4){
         number[i].S=(number[i].lenght_side*number[i].lenght_side);
@@ -178,11 +207,21 @@ void square(figure *number,int i){
        number[i].S=(number[i].count_side*(number[i].lenght_side*number[i].lenght_side))/(4*tan(M_PI/number[i].count_side));
     }
 }
-void output(figure *number){
+void output(figure *number,int size_arr){
     int i;
-    cout << "Данные какого многоугольника выводить?"<<endl;
+    cout << "Данные какого многоугольника выводить?"<<endl; //исправить
     cin >> i;
+    if(i>size_arr){
+        cout<<"Данные многоугольника "<<i<<" не существуют!"<<endl;
+        return;
+    }
     i--;
+
+    if(number[i].flag==0){
+        cout<<"Данные многоугольника "<<i+1<<" не введены!"<<endl;
+        return;
+    }
+
     cout << "Многоугольник: " << i+1 << endl;
     cout << "Количество вершин: " << number[i].count_side << endl;
 
@@ -259,33 +298,29 @@ void clean(){
         i++;
     }
 }
-void delete_number(figure *number,int size_arr){
+void delete_number(figure *number,int &size_arr){
     int i;
     cout << "Данные какого многоугольника удалить?"<<endl;
-            cin>>i;
-            i--;
+    cin>>i;
+    i--;
 
 
-    for(int j=i;j<size_arr-1;j++){
-        number[i]=number[i+1];
-    }
-
-    number[size_arr-1].count_side=0;
-    number[size_arr-1].lenght_side=0;
-    number[size_arr-1].x=0;
-    number[size_arr-1].y=0;
-    number[size_arr-1].S=0;
-    number[size_arr-1].P=0;
-
-/*    int newSize = size_arr - 1;
+    int newSize = size_arr - 1;
     figure *p_number_new = new figure[newSize];
 
-    for(int i=0;i<size_arr-1;i++){
-        p_number_new[i]=number[i];
+    int iter = 0;
+    for(int j=0;j<size_arr;j++){
+        if (j != i){
+            cout << "Iter:" << iter << "j:" << j << "i:" << i << endl;
+            p_number_new[iter]=number[j];
+            iter++;
+        }
+        else
+            cout << "doesn't copy " << j;
     }
     size_arr=newSize;
     delete[] number;
-    number=p_number_new;*/
+    number=p_number_new;
 
 }
 void coord_figure(figure *number,int i){
@@ -312,4 +347,8 @@ void coord_figure(figure *number,int i){
     }
     cout << endl;
 }
-
+int init_var(){
+    cin.get();
+    char a=cin.get();
+    return(int(a)-48);
+}
