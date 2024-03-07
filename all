@@ -200,10 +200,12 @@ void input(figure *number,int size_arr){
 
     do{
         cout <<"Введите координату x ";
+        //cout <<"в диапазоне  -infty до " << R << " или "<< "от " << R << " до +infty" <<endl;
         cin >>number[i].x;
         cout <<"Введите координату y\n";
-        double L=acos(R/number[i].x);
+        double L=acos(number[i].x/R);
         double p_y=R*sin(L);
+        if((number[i].x<R)&&(number[i].x>0)||(number[i].x>R)&&(number[i].x<0))
         cout <<"не меньше чем " << p_y << endl;
         cin >>number[i].y;
         double pR=sqrt(number[i].x*number[i].x+number[i].y*number[i].y);
