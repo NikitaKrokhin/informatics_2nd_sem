@@ -1,8 +1,9 @@
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
-/* расчет скорости прохождения трассы
+/* расчет скорости ТС
     расчет потребеления двигателя
     */
 class Car{
@@ -19,11 +20,11 @@ public:
     Car();
     ~Car();
     double get_speed();
-    double get_engine_consumption();
+
     int calculate_count_gas_stations(double length_route);
     void output();
     void input();
-    int calculate_travel_time(double length_route);
+    double calculate_travel_time(double length_route);
     double calculate_engine_consumption();
     double get_travel_time();
     string get_name();
@@ -35,7 +36,7 @@ Car::Car(){
  Car::~Car(){
         cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
     }
-
+void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_name,int size_arr);
 void clean();
 void ignoreLine();
 void Car::output(){
@@ -59,9 +60,9 @@ void Car::input(){
         cout<< "Введите время в пути ТС (час) "<<name<<endl;
         cin>>travel_time;
 }
-int Car::calculate_travel_time(double length_route){
+double Car::calculate_travel_time(double length_route){
     travel_time=length_route/speed;
-    return 1;
+    return travel_time;
  }
 double Car::get_travel_time(){
     return travel_time;
@@ -73,7 +74,14 @@ int Car::calculate_count_gas_stations(double length_route){
     count_gas_stations=length_route/(tank_volume*engine_consumption);
     return count_gas_stations;
 }
-
+double Car::get_speed(){
+    speed=10;
+    return speed;
+}
+double Car::calculate_engine_consumption(){
+      engine_consumption=10;
+      return engine_consumption;
+}
 int main()
 {
     setlocale(LC_CTYPE,"");
@@ -81,8 +89,30 @@ int main()
     int size_arr=10,num=0;
     double length_route=0;
     int i=0;
+    int flag_track=0;
+    int flag_time_track=0;
+
+    double* travel_time_arr =new double[size_arr];
+    double* count_gas_stations =new double[size_arr];
+    string* arr_name=new string[size_arr];
+
+    cout << "Ввелите количество транспортных средств!" << endl;
+    cin >> size_arr;
+    while (cin.fail()) {
+        ignoreLine();
+        cout << "Пожалуйста введите число а не символ!" << endl;
+        cin >> size_arr;
+    }
+
+    clean();
+
 
     Car* number_car=new Car[size_arr];
+
+    for(int i=0;i<size_arr;i++){
+        number_car[i].get_speed();
+        number_car[i].calculate_engine_consumption();
+    }
 
     clean();
     do{
@@ -90,7 +120,9 @@ int main()
         cout<<"2-Вывод данных ТС"<<endl;
         cout<<"3-Ввод протяженности трассы"<<endl;
         cout<<"4-Расчет прохождения трассы"<<endl;
-        cout<<"5-Результаты прохождения трассы"<<endl;
+        if(flag_time_track==1){
+            cout<<"5-Результаты прохождения трассы"<<endl;
+        }
         cout<<"0-Закончить работу"<<endl;
         cout << "Введите действие: ";
 
@@ -103,14 +135,29 @@ int main()
 
         clean();
         if(num==1){
+            cout << "Введите номер транспорта!" << endl;
+            cin >> i;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> i;
+            }
+            i--;
             clean();
 
             number_car[i].input();
             clean();
         }
         else if(num==2){
+            cout << "Введите номер транспорта!" << endl;
+            cin >> i;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> i;
+            }
             clean();
-
+            i--;
             number_car[i].output();
 
             cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
@@ -126,22 +173,39 @@ int main()
                 cout << "Пожалуйста введите число а не символ!" << endl;
                 cin >> length_route;
             }
+            flag_track=1;
             cout<<"Данные успешно введены!"<<endl;
             cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+
             cin.get();
             cin.get();
             clean();
 
         }else if(num==4){
-            number_car[i].calculate_travel_time(length_route);
-            cout<<"Расчет прохождения трассы проведен!"<<endl;
-            cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
-            cin.get();
-            cin.get();
-            clean();
+            if(flag_track==1){
+
+                for(int i=0;i<size_arr;i++){
+                       travel_time_arr[i]=number_car[i].calculate_travel_time(length_route);
+                       count_gas_stations[i]=number_car[i].calculate_count_gas_stations(length_route);
+                        arr_name[i]=number_car[i].get_name();
+                }
+
+                cout<<"Расчет прохождения трассы проведен!"<<endl;
+                flag_time_track=1;
+
+                cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+                cin.get();
+                cin.get();
+                clean();
+            }else{
+                cout<<"Для использования функции введите длину трассы!"<<endl;
+            }
         }else if(num==5){
-            cout<<"Время прохождения трассы автомобилем "<< number_car[i].get_name() << ": "<<  number_car[i].get_travel_time()<<endl;
-            cout<<"Количество запарвок: "<< number_car[i].calculate_count_gas_stations(length_route)<<endl;
+            comparison(travel_time_arr,count_gas_stations,arr_name,size_arr);
+            for(int i=0;i<size_arr;i++){
+                cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << ": "<<  travel_time_arr[i]<<endl;
+                cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
+            }
             cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
             cin.get();
             cin.get();
@@ -163,8 +227,6 @@ int main()
     }while(num!=0);
     cout << "Работа завершена!"<<endl;
 
-   // realloc(number_car,size_arr);
-
     delete[] number_car;
 
     return 0;
@@ -181,4 +243,42 @@ void clean(){
         cout<<endl;
         i++;
     }
+}
+void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_name,int size_arr){
+
+            for(int i=0;i<size_arr;i++)
+            {
+              for(int j=0;j<size_arr-1;++j)
+              {
+                  if(travel_time_arr[j]>travel_time_arr[j+1])
+                {
+                    double temp=travel_time_arr[j];
+                    travel_time_arr[j]=travel_time_arr[j+1];
+                    travel_time_arr[j+1]=temp;
+                    int temp_refuelings=count_gas_stations[j];
+                    count_gas_stations[j]=count_gas_stations[j+1];
+                    count_gas_stations[j+1]=temp_refuelings;
+                    string temp_name;
+                    temp_name=arr_name[j];
+                    arr_name[j]=arr_name[j+1];
+                    arr_name[j+1]=temp_name;
+                }
+                if(travel_time_arr[j]==travel_time_arr[j+1])
+                {
+                  if(count_gas_stations[j]>count_gas_stations[j+1])
+                  {
+                    double temp=travel_time_arr[j];
+                    travel_time_arr[j]=travel_time_arr[j+1];
+                    travel_time_arr[j+1]=temp;
+                    int temp_refuelings=count_gas_stations[j];
+                    count_gas_stations[j]=count_gas_stations[j+1];
+                    count_gas_stations[j+1]=temp_refuelings;
+                    string temp_name;
+                    temp_name=arr_name[j];
+                    arr_name[j]=arr_name[j+1];
+                    arr_name[j+1]=temp_name;
+                  }
+                }
+              }
+            }
 }
