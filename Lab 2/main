@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <cmath>
 
 using namespace std;
 
@@ -20,7 +21,6 @@ public:
     Car();
     ~Car();
     double get_speed();
-
     int calculate_count_gas_stations(double length_route);
     void output();
     void input();
@@ -43,7 +43,9 @@ void Car::output(){
     cout<<"Информация о ТС "<<name<<endl;
     cout<< "Количество колес: "<<count_wheel<<endl;
     cout<< "Мощность двигателя(ЛС): "<<engine_power<<endl;
+    get_speed();
     cout<< "Скорость(м/с): "<<speed<<endl;
+    calculate_engine_consumption();
     cout<< "Потребление топлива(л/км): "<<engine_consumption<<endl;
 };
 void Car::input(){
@@ -75,11 +77,11 @@ int Car::calculate_count_gas_stations(double length_route){
     return count_gas_stations;
 }
 double Car::get_speed(){
-    speed=10;
+    speed=sqrt(engine_power)*((70/count_wheel)-2,5);
     return speed;
 }
 double Car::calculate_engine_consumption(){
-      engine_consumption=10;
+      engine_consumption=pow(engine_power,1/3)+sqrt(engine_power)-6,25;
       return engine_consumption;
 }
 int main()
