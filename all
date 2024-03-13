@@ -127,7 +127,10 @@ int main()
             }
         }else if(num==4){
             delete_number(p_number,size_arr);
-            clean();
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+                cin.get();
+                cin.get();
+                clean();
         }else if(num==5){
             realloc(p_number,size_arr);
             cout <<"Добавленна ячейка для нового многоугольника!"<<endl;
@@ -324,10 +327,17 @@ void clean(){
         i++;
     }
 }
-void delete_number(figure *number,int &size_arr){
+void delete_number(figure *p_number,int &size_arr){
     int i;
     cout << "Данные какого многоугольника удалить?"<<endl;
+    int flag_2=0;
+    do{
     cin>>i;
+        if(i<=size_arr || i>0){
+            flag_2=1;
+        }
+    }while(flag_2!=1);
+
     i--;
 
 
@@ -338,15 +348,19 @@ void delete_number(figure *number,int &size_arr){
     for(int j=0;j<size_arr;j++){
         if (j != i){
             cout << "Iter:" << iter << "j:" << j << "i:" << i << endl;
-            p_number_new[iter]=number[j];
+            p_number_new[iter]=p_number[j];
             iter++;
         }
         else
             cout << "doesn't copy " << j;
     }
+    cout << "p_number "<<p_number<<endl;
+     cout << "p_number_new "<<p_number_new<<endl;
     size_arr=newSize;
-    delete[] number;
-    number=p_number_new;
+    delete[] p_number;
+    p_number=p_number_new;
+    cout << "p_number "<<p_number<<endl;
+     cout << "p_number_new "<<p_number_new<<endl;
 
 }
 void coord_figure(figure *number,int i){
@@ -378,4 +392,3 @@ void ignoreLine()
     cin.clear();
     cin.ignore();
 }
-
