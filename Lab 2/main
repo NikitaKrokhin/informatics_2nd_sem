@@ -4,9 +4,6 @@
 
 using namespace std;
 
-/* расчет скорости ТС
-    расчет потребеления двигателя
-    */
 class Car{
     int count_wheel;
     double mileage;
@@ -19,11 +16,11 @@ class Car{
     string name;
 public:
     Car();
+    Car(int i,Car* number_car);
     ~Car();
     double get_speed();
     int calculate_count_gas_stations(double length_route);
     void output();
-    void input();
     double calculate_travel_time(double length_route);
     double calculate_engine_consumption();
     double get_travel_time();
@@ -34,15 +31,16 @@ public:
 Car::Car(){
     cout <<"Запись об ТС "<< name <<" создана!"<<endl;
     };
- Car::~Car(){
+Car::~Car(){
         cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
-    }
+    };
 void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_name,int size_arr);
 void clean();
 void ignoreLine();
 int Car::get_main_flag(){
     return main_flag;
 }
+
 void Car::output(){
     cout<<"Информация о ТС "<<name<<endl;
     cout<< "Количество колес: "<<count_wheel<<endl;
@@ -52,25 +50,27 @@ void Car::output(){
     calculate_engine_consumption();
     cout<< "Потребление топлива(л/100км): "<<engine_consumption<<endl;
 };
+
 void check_input(double &param);
 void check_input(int &param);
-void Car::input(){
 
-        cout<< "Введите название ТС:"<<endl;
-        cin>>name;
-        cout<< "Введите количество колес ТС "<<name<<endl;
-        check_input(count_wheel);
-        cout<< "Введите пробег ТС (км) "<<name<<endl;
-        check_input(mileage);
-        cout<< "Введите объем бака ТС (л) "<<name<<endl;
-        check_input(tank_volume);
-        cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
-        check_input(engine_power);
-        cout<< "Введите время в пути ТС (час) "<<name<<endl;
-        check_input(travel_time);
+Car::Car(int i,Car* number_car){
+    cout<< "Введите название ТС:"<<endl;
+    cin>>number_car[i].name;
+    cout<< "Введите количество колес ТС "<<name<<endl;
+    check_input(number_car[i].count_wheel);
+    cout<< "Введите пробег ТС (км) "<<name<<endl;
+    check_input(number_car[i].mileage);
+    cout<< "Введите объем бака ТС (л) "<<name<<endl;
+    check_input(number_car[i].tank_volume);
+    cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
+    check_input(number_car[i].engine_power);
+    cout<< "Введите время в пути ТС (час) "<<name<<endl;
+    check_input(number_car[i].travel_time);
 
-        main_flag=1;
+    number_car[i].main_flag=1;
 }
+
 double Car::calculate_travel_time(double length_route){
     get_speed();
     travel_time=length_route/speed;
@@ -128,7 +128,9 @@ int main()
 
     Car* number_car=new Car[size_arr];
 
-
+    cout<<"Для продолжения нажмите любую клавишу!"<<endl;
+                cin.get();
+                cin.get();
     clean();
     do{
         cout<<"1-Ввод данных о новом ТС"<<endl;
@@ -157,11 +159,11 @@ int main()
                 cout << "Пожалуйста введите число а не символ!" << endl;
                 cin >> i;
             }
+
             if(i<=size_arr&&i>0){
                 i--;
+                Car(i,number_car);
                 clean();
-
-                number_car[i].input();
             }else{
                 cout<<"Такого ТС не существует!"<<endl;
                 cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
@@ -282,6 +284,9 @@ void clean(){
         i++;
     }
 }
+void in_comp(double* travel_time_arr,double* count_gas_stations, string* arr_name){
+
+};
 void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_name,int size_arr){
 
             for(int i=0;i<size_arr;i++)
