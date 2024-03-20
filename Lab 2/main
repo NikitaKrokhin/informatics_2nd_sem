@@ -91,12 +91,11 @@ double Car::get_speed(){
     if(main_flag!=1){
         count_wheel=1;
     }
-     //ОШИБКА ТОГО ЧТО НЕЛЬЗЯ ДЕЛИТЬ НА 0
-    speed=sqrt(engine_power)*(70/count_wheel-2.5);
+    speed=sqrt(engine_power)*fabs(70/count_wheel-2.5);
     return speed;
 }
 double Car::calculate_engine_consumption(){
-      engine_consumption=pow(engine_power,1/3)+sqrt(engine_power)-6.25;
+      engine_consumption=pow(engine_power,1/3)+fabs(sqrt(engine_power)-6.25);
       return engine_consumption;
 }
 
@@ -284,8 +283,17 @@ void clean(){
         i++;
     }
 }
-void in_comp(double* travel_time_arr,double* count_gas_stations, string* arr_name){
-
+void in_comp(double* travel_time_arr,double* count_gas_stations, string* arr_name,int i,int j){
+    double temp=travel_time_arr[j];
+    travel_time_arr[j]=travel_time_arr[j+1];
+    travel_time_arr[j+1]=temp;
+    int temp_refuelings=count_gas_stations[j];
+    count_gas_stations[j]=count_gas_stations[j+1];
+    count_gas_stations[j+1]=temp_refuelings;
+    string temp_name;
+    temp_name=arr_name[j];
+    arr_name[j]=arr_name[j+1];
+    arr_name[j+1]=temp_name;
 };
 void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_name,int size_arr){
 
@@ -295,31 +303,13 @@ void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_
               {
                   if(travel_time_arr[j]>travel_time_arr[j+1])
                 {
-                    double temp=travel_time_arr[j];
-                    travel_time_arr[j]=travel_time_arr[j+1];
-                    travel_time_arr[j+1]=temp;
-                    int temp_refuelings=count_gas_stations[j];
-                    count_gas_stations[j]=count_gas_stations[j+1];
-                    count_gas_stations[j+1]=temp_refuelings;
-                    string temp_name;
-                    temp_name=arr_name[j];
-                    arr_name[j]=arr_name[j+1];
-                    arr_name[j+1]=temp_name;
+                    in_comp(travel_time_arr,count_gas_stations,arr_name,i,j);
                 }
                 if(travel_time_arr[j]==travel_time_arr[j+1])
                 {
                   if(count_gas_stations[j]>count_gas_stations[j+1])
                   {
-                    double temp=travel_time_arr[j];
-                    travel_time_arr[j]=travel_time_arr[j+1];
-                    travel_time_arr[j+1]=temp;
-                    int temp_refuelings=count_gas_stations[j];
-                    count_gas_stations[j]=count_gas_stations[j+1];
-                    count_gas_stations[j+1]=temp_refuelings;
-                    string temp_name;
-                    temp_name=arr_name[j];
-                    arr_name[j]=arr_name[j+1];
-                    arr_name[j+1]=temp_name;
+                    in_comp(travel_time_arr,count_gas_stations,arr_name,i,j);
                   }
                 }
               }
@@ -349,4 +339,3 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
-
