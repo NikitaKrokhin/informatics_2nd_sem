@@ -105,7 +105,7 @@ int main()
     setlocale(LC_CTYPE,"");
 
     int size_arr=10,num=0;
-    double length_route=0;
+    double length_route=.0;
     int i=0;
     int flag_track=0;
     int flag_time_track=0;
@@ -177,7 +177,7 @@ int main()
             cin >> i;
             while (cin.fail()) {
                 ignoreLine();
-                cout << "Пожалуйста введите число а не символ!" << endl;
+                cout << "Пожалуйста введите число, а не символ!" << endl;
                 cin >> i;
             }
             if(i<=size_arr&&i>0){
@@ -198,16 +198,16 @@ int main()
             cin>>length_route;
             while (cin.fail()) {
                 ignoreLine();
-                cout << "Пожалуйста введите число а не символ!" << endl;
+                cout << "Пожалуйста введите число, а не символ!" << endl;
                 cin >> length_route;
             }
             if(length_route>0){
                 flag_track=1;
                 cout<<"Данные успешно введены!"<<endl;
             }else{
-                cout<<"Длина дороги не может быь отрицательной!"<<endl;
+                cout<<"Длина дороги не может быть отрицательной!"<<endl;
             }
-            cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
 
             cin.get();
             cin.get();
@@ -235,7 +235,7 @@ int main()
             }else{
                 cout<<"Введены данные не о всех ТС!"<<endl;
             }
-            cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
                     cin.get();
                     cin.get();
                     clean();
@@ -245,19 +245,19 @@ int main()
                 cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << ": "<<  travel_time_arr[i]<<endl;
                 cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
             }
-            cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
             cin.get();
             cin.get();
             clean();
         }
         if(num==0){
-            cout<<"Точно хотите завершить рабуоту?"<<endl;
+            cout<<"Точно хотите завершить работу?"<<endl;
             cout<<"1-ДА"<<endl;
             cout<<"0-НЕТ"<<endl;
             cin>>num;
             while (cin.fail()) {
                 ignoreLine();
-                cout << "Пожалуйста введите число а не символ!" << endl;
+                cout << "Пожалуйста введите число, а не символ!" << endl;
                 cin >> num;
             }
             num--;
