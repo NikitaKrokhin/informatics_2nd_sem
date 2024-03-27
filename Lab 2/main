@@ -59,14 +59,10 @@ Car::Car(int i,Car* number_car){
     cin>>number_car[i].name;
     cout<< "Введите количество колес ТС "<<name<<endl;
     check_input(number_car[i].count_wheel);
-    cout<< "Введите пробег ТС (км) "<<name<<endl;
-    check_input(number_car[i].mileage);
     cout<< "Введите объем бака ТС (л) "<<name<<endl;
     check_input(number_car[i].tank_volume);
     cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
     check_input(number_car[i].engine_power);
-    cout<< "Введите время в пути ТС (час) "<<name<<endl;
-    check_input(number_car[i].travel_time);
 
     number_car[i].main_flag=1;
 }
@@ -84,7 +80,7 @@ string Car::get_name(){
 }
 int Car::calculate_count_gas_stations(double length_route){
     calculate_engine_consumption();
-    count_gas_stations=length_route/(tank_volume/engine_consumption);
+    count_gas_stations=ceil(length_route/(tank_volume/engine_consumption));
     return count_gas_stations;
 }
 double Car::get_speed(){
@@ -114,14 +110,23 @@ int main()
     double* count_gas_stations =new double[size_arr];
     string* arr_name=new string[size_arr];
 
-    cout << "Ввелите количество транспортных средств!" << endl;
-    cin >> size_arr;
-    while (cin.fail()) {
-        ignoreLine();
-        cout << "Пожалуйста введите число а не символ!" << endl;
+    int check=0;
+    do{
+        cout << "Ввелите количество транспортных средств!" << endl;
         cin >> size_arr;
-    }
 
+        while (cin.fail()) {
+            ignoreLine();
+            cout << "Пожалуйста введите число а не символ!" << endl;
+            cin >> size_arr;
+        }
+        if(size_arr > 0){
+           check=1;
+        }
+        else{
+            cout<<"Ошибка ввода!"<<endl;
+        }
+    }while(check!=1);
     clean();
 
 
@@ -188,7 +193,7 @@ int main()
                 cout<<"Такого ТС не существует!"<<endl;
             }
 
-            cout<<"Для возврашения в главное миню нажмите любую клавишу!"<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
             cin.get();
             cin.get();
             clean();
@@ -319,7 +324,7 @@ void check_input(double &param){
     int flag=0;
     do{
         cin>>param;
-        if(param>=0){
+        if(param>0){
             flag=1;
         }else{
             cout<<"Повторите ввод,данные невозможны!!!"<<endl;
