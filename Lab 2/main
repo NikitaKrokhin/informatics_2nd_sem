@@ -87,7 +87,7 @@ double Car::get_speed(){
     if(main_flag!=1){
         count_wheel=1;
     }
-    speed=sqrt(engine_power)*fabs(70/count_wheel-2.5);
+    speed=sqrt(engine_power)*fabs(70/(double)count_wheel-2.5);
     return speed;
 }
 double Car::calculate_engine_consumption(){
@@ -247,7 +247,10 @@ int main()
         }else if(num==5){
             comparison(travel_time_arr,count_gas_stations,arr_name,size_arr);
             for(int i=0;i<size_arr;i++){
-                cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << ": "<<  travel_time_arr[i]<<endl;
+                cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << endl;
+                cout<< "Часов:" <<(int)(travel_time_arr[i])<<"\t";
+                cout<< "Минут:" <<(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)<<"\t";
+                cout<< "Секунд:" <<(int)(travel_time_arr[i]*3600-(int)(travel_time_arr[i])*3600-(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)*60)<<endl;
                 cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
             }
             cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
