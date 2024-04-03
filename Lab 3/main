@@ -1,0 +1,145 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+void check_input(double &param);
+void check_input(int &param);
+class Wheel{
+    string wheel_condition;
+    double wheel_mileage;
+
+};
+
+class Engine{
+    double engine_consumption;
+protected:
+    double engine_power;
+public:
+    double get_engine_consumption(){return engine_consumption;}
+    double calculate_engine_consumption();
+};
+
+double Engine::calculate_engine_consumption(){
+      engine_consumption=pow(engine_power,1/3)+fabs(sqrt(engine_power)-6.25);
+      return engine_consumption;
+}
+
+class Fuel_system {
+    double tank_volume;
+    double remaining_fuel;
+public:
+//     double calculate_remaining_fuel(){   // не дает доступ к пробегу и потреблению вопрос с наследованием
+//        remaining_fuel=tank_volume-get_mileage()*get_engine_consumption();
+//        return remaining_fuel;
+//    }
+};
+
+class Vehicle: public Engine,public Fuel_system{
+    int count_wheel;
+    double mileage;
+    double speed;
+    string name;
+    Wheel* ptr_wheel; //bad_alloc
+    int main_flag=0;
+public:
+    Vehicle();
+    Vehicle(int i,Vehicle* number_Vehicle);
+    ~Vehicle();
+    double get_mileage(){return mileage;}
+    void calculate_speed();
+    double get_speed(){return speed;}
+};
+
+void Vehicle::calculate_speed(){
+    if(main_flag!=1){
+        count_wheel=1;
+    }
+    speed=sqrt(engine_power)*fabs(70/(double)count_wheel-2.5);
+}
+Vehicle::Vehicle(){
+    cout <<"Запись об ТС "<< name <<" создана!"<<endl;
+    };
+Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
+    cout<< "Введите название ТС:"<<endl;
+    cin>>number_Vehicle[i].name;
+    cout<< "Введите пробег ТС:"<<endl;
+    check_input(number_Vehicle[i].mileage);
+    cout<< "Введите количество колес ТС "<<name<<endl;
+    check_input(number_Vehicle[i].count_wheel);
+    number_Vehicle[i].main_flag=1;
+    ptr_wheel=new Wheel[number_Vehicle[i].count_wheel];
+}
+Vehicle::~Vehicle(){
+        cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
+    };
+
+
+void clean();
+void ignoreLine();
+
+int main()
+{
+    setlocale(LC_CTYPE,"");
+
+    int size_arr=0;
+
+    int check=0;
+    do{
+        cout << "Введите количество транспортных средств!" << endl;
+        cin >> size_arr;
+
+        while (cin.fail()) {
+            ignoreLine();
+            cout << "Пожалуйста введите число а не символ!" << endl;
+            cin >> size_arr;
+        }
+        if(size_arr > 0){
+            check=1;
+        }
+        else{
+            cout<<"Ошибка ввода!"<<endl;
+            }
+    }while(check!=1);
+    clean();
+
+    Vehicle* number_Vehicle=new Vehicle[size_arr];
+    Vehicle(0, number_Vehicle); // тест
+}
+
+void ignoreLine()
+{
+    cin.clear();
+    cin.ignore();
+}
+void clean(){
+    int i=0;
+    while(i<100){
+        cout<<endl;
+        i++;
+    }
+}
+void check_input(double &param){
+    int flag=0;
+    do{
+        cin>>param;
+        if(param>0){
+            flag=1;
+        }else{
+            cout<<"Повторите ввод,данные невозможны!!!"<<endl;
+        }
+    }while(flag!=1);
+    flag=0;
+}
+void check_input(int &param){
+    int flag=0;
+    do{
+        cin>>param;
+        if(param>1){
+            flag=1;
+        }else{
+            cout<<"Повторите ввод,данные невозможны!!!"<<endl;
+        }
+    }while(flag!=1);
+    flag=0;
+}
