@@ -11,6 +11,7 @@ class Wheel{
     double wheel_mileage;
 public:
     int get_wheel_condition(){return wheel_condition;}
+    int get_wheel_mileage(){return wheel_mileage;}
     Wheel(){cout<<"Колесо добавлено"<<endl;};
     void inp_Wheel(int i);
 };
@@ -60,7 +61,25 @@ public:
     void calculate_speed();
     double get_speed(){return speed;}
     int get_count_wheel();
+    void output();
 };
+void Vehicle::output(){
+    cout<<"Информация о ТС "<<name<<endl;
+    cout<< "Количество колес: "<<count_wheel<<endl;
+    for(int i=0;i<count_wheel;i++){
+        cout<< "Состояние колеса "<< i+1 <<": "<<endl;
+        cout<<ptr_wheel[i].get_wheel_condition()<<endl;
+        cout<< "Пробег колеса "<< i+1 <<": "<<endl;
+        cout<<ptr_wheel[i].get_wheel_mileage()<<endl;
+        cout <<endl;
+    }
+    cout<< "Мощность двигателя(ЛС): "<<engine_power<<endl;
+    get_speed();
+    cout<< "Скорость(км/ч): "<<speed<<endl;
+//    calculate_engine_consumption();
+//    cout<< "Потребление топлива(л/100км): "<<engine_consumption<<endl;
+}
+
 int Vehicle::get_count_wheel(){
     return count_wheel;
 }
@@ -182,6 +201,7 @@ int main()
             if(i<=size_arr&&i>0){
                 clean();
                 i--;
+                number_Vehicle[i].output();
                 //number_car[i].output();
             }else{
                 cout<<"Такого ТС не существует!"<<endl;
@@ -306,4 +326,3 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
-
