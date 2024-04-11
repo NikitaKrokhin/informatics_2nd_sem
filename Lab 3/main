@@ -7,9 +7,10 @@ void check_input(double &param);
 void check_input(int &param);
 
 class Wheel{
-    int wheel_condition;
+
     double wheel_mileage;
 public:
+    int wheel_condition;
     Wheel();
 };
 Wheel::Wheel(){
@@ -79,7 +80,7 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     cout<< "Введите количество колес ТС "<<name<<endl;
     check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
-    ptr_wheel=new Wheel[number_Vehicle[i].count_wheel];
+    number_Vehicle[i].ptr_wheel=new Wheel[number_Vehicle[i].count_wheel];
 }
 Vehicle::~Vehicle(){
         cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
@@ -115,10 +116,10 @@ int main()
     clean();
 
     Vehicle* number_Vehicle=new Vehicle[size_arr]; // создается класс транспортных средств с n количеством объектов и выводится натпись о том что создалось
-    
-    
+
+
     Vehicle(0, number_Vehicle); // тест
-  //  number_Vehicle[0].ptr_wheel[0]; //на это месте программа ложится
+    cout<<number_Vehicle[0].ptr_wheel[0].wheel_condition<<endl; //на это месте программа ложится
 
     delete[] number_Vehicle;
 }
