@@ -10,10 +10,10 @@ class Wheel{
     int wheel_condition;
     double wheel_mileage;
 public:
-    inp_Wheel(int i);
+    Wheel();
 };
-Wheel::inp_Wheel(int i){
-        cout<<"\nВведите изношенность колеса №"<< i+1 <<"\n1-Целое\n0-Изношенное"<<endl;
+Wheel::Wheel(){
+        cout<<"\nВведите изношенность колеса № \n1-Целое\n0-Изношенное"<<endl;
         cin>>wheel_condition;
         cout<<"Введите пробег колеса"<<endl;
         cin>>wheel_mileage;
@@ -51,7 +51,6 @@ class Vehicle: public Engine,public Fuel_system{
     int main_flag=0;
 public:
     Wheel* ptr_wheel; //bad_alloc
-    Wheel* get_ptr_wheel(){return ptr_wheel;}//указатель отправляем
     Vehicle();
     Vehicle(int i,Vehicle* number_Vehicle);
     ~Vehicle();
@@ -76,9 +75,9 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     cout<< "Введите название ТС:"<<endl;
     cin>>number_Vehicle[i].name;
     cout<< "Введите пробег ТС:"<<endl;
-    check_input(number_Vehicle[i].mileage);
+    check_input(number_Vehicle[i].mileage); //проверка на числовое значение ранспортных средств
     cout<< "Введите количество колес ТС "<<name<<endl;
-    check_input(number_Vehicle[i].count_wheel);
+    check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
     ptr_wheel=new Wheel[number_Vehicle[i].count_wheel];
 }
@@ -115,9 +114,11 @@ int main()
     }while(check!=1);
     clean();
 
-    Vehicle* number_Vehicle=new Vehicle[size_arr];
+    Vehicle* number_Vehicle=new Vehicle[size_arr]; // создается класс транспортных средств с n количеством объектов и выводится натпись о том что создалось
+    
+    
     Vehicle(0, number_Vehicle); // тест
-    number_Vehicle[0].ptr_wheel[0].inp_Wheel(0); //на это месте программа ложится
+  //  number_Vehicle[0].ptr_wheel[0]; //на это месте программа ложится
 
     delete[] number_Vehicle;
 }
