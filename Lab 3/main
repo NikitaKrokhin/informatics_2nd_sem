@@ -7,14 +7,15 @@ void check_input(double &param);
 void check_input(int &param);
 
 class Wheel{
-
+    int wheel_condition;
     double wheel_mileage;
 public:
-    int wheel_condition;
-    Wheel();
+    int get_wheel_condition(){return wheel_condition;}
+    Wheel(){cout<<"Колесо добавлено"<<endl;};
+    void inp_Wheel(int i);
 };
-Wheel::Wheel(){
-        cout<<"\nВведите изношенность колеса № \n1-Целое\n0-Изношенное"<<endl;
+void Wheel::inp_Wheel(int i){
+        cout<<"\nВведите изношенность колеса № "<<i+1<<"\n1-Целое\n0-Изношенное"<<endl;
         cin>>wheel_condition;
         cout<<"Введите пробег колеса"<<endl;
         cin>>wheel_mileage;
@@ -80,7 +81,7 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     cout<< "Введите количество колес ТС "<<name<<endl;
     check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
-    number_Vehicle[i].ptr_wheel=new Wheel[number_Vehicle[i].count_wheel];
+    number_Vehicle[i].ptr_wheel=new Wheel[number_Vehicle[i].count_wheel]; //!!!САМАЯ ВАЖНАЯ ТОЧКА ПРОГРАММЫ!!!
 }
 Vehicle::~Vehicle(){
         cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
@@ -94,6 +95,11 @@ int main()
 {
     setlocale(LC_CTYPE,"");
 
+    int num=0;
+    double length_route=.0;
+    int i=0;
+    int flag_track=0;
+    int flag_time_track=0;
     int size_arr=0;
 
     int check=0;
@@ -117,9 +123,149 @@ int main()
 
     Vehicle* number_Vehicle=new Vehicle[size_arr]; // создается класс транспортных средств с n количеством объектов и выводится натпись о том что создалось
 
+//
+//    Vehicle(0, number_Vehicle); // тест
+//    cout<<number_Vehicle[0].ptr_wheel[0].get_wheel_condition()<<endl; //на это месте программа ложится (Уже нет !!!!!!!!)
 
-    Vehicle(0, number_Vehicle); // тест
-    cout<<number_Vehicle[0].ptr_wheel[0].wheel_condition<<endl; //на это месте программа ложится
+    do{
+        cout<<"1-Ввод данных о новом ТС"<<endl;
+        cout<<"2-Вывод данных ТС"<<endl;
+        cout<<"3-Ввод протяженности трассы"<<endl;
+        cout<<"4-Расчет прохождения трассы"<<endl;
+        if(flag_time_track==1){
+            cout<<"5-Результаты прохождения трассы"<<endl;
+        }
+        cout<<"0-Закончить работу"<<endl;
+        cout << "Введите действие: ";
+
+        cin >> num;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> num;
+            }
+
+        clean();
+        if(num==1){
+            cout << "Введите номер транспорта!" << endl;
+            cin >> i;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число а не символ!" << endl;
+                cin >> i;
+            }
+
+            if(i<=size_arr&&i>0){
+                i--;
+                Vehicle(i,number_Vehicle);
+                for(int j=0;j<number_Vehicle[i].get_count_wheel();j++){
+                    number_Vehicle[i].ptr_wheel[j].inp_Wheel(j);
+                }
+                clean();
+            }else{
+                cout<<"Такого ТС не существует!"<<endl;
+                cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+                cin.get();
+                cin.get();
+            }
+            clean();
+
+        }
+        else if(num==2){
+            cout << "Введите номер транспорта!" << endl;
+            cin >> i;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число, а не символ!" << endl;
+                cin >> i;
+            }
+            if(i<=size_arr&&i>0){
+                clean();
+                i--;
+                //number_car[i].output();
+            }else{
+                cout<<"Такого ТС не существует!"<<endl;
+            }
+
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+            cin.get();
+            cin.get();
+            clean();
+        }else if(num==3){
+            clean();
+            cout<<"Введите протяженность трассы (км)!"<<endl;
+            cin>>length_route;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число, а не символ!" << endl;
+                cin >> length_route;
+            }
+            if(length_route>0){
+                flag_track=1;
+                cout<<"Данные успешно введены!"<<endl;
+            }else{
+                cout<<"Длина дороги не может быть отрицательной!"<<endl;
+            }
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+
+            cin.get();
+            cin.get();
+            clean();
+
+        }else if(num==4){
+//            int check=0;
+//            for(int i=0;i<size_arr;i++){
+//                check=check+number_car[i].get_main_flag();
+//            }
+//            if(check==size_arr){
+//                if(flag_track==1){
+//                    //cout<<"length_route "<<length_route<<endl;
+//                    for(int i=0;i<size_arr;i++){
+//                           travel_time_arr[i]=number_car[i].calculate_travel_time(length_route);
+//                           count_gas_stations[i]=number_car[i].calculate_count_gas_stations(length_route);
+//                            arr_name[i]=number_car[i].get_name();
+//                    }
+
+//                    cout<<"Расчет прохождения трассы проведен!"<<endl;
+//                    flag_time_track=1;
+//                }else{
+//                    cout<<"Для использования функции введите длину трассы!"<<endl;
+//                }
+//            }else{
+//                cout<<"Введены данные не о всех ТС!"<<endl;
+//            }
+//            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+//                    cin.get();
+//                    cin.get();
+//                    clean();
+        }else if(num==5){
+            for(int i=0;i<size_arr;i++){
+//                cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << endl;
+//                cout<< "Часов:" <<(int)(travel_time_arr[i])<<"\t";
+//                cout<< "Минут:" <<(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)<<"\t";
+//                cout<< "Секунд:" <<(int)(travel_time_arr[i]*3600-(int)(travel_time_arr[i])*3600-(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)*60)<<endl;
+//                cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
+            }
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+            cin.get();
+            cin.get();
+            clean();
+        }
+        if(num==0){
+            cout<<"Точно хотите завершить работу?"<<endl;
+            cout<<"1-ДА"<<endl;
+            cout<<"0-НЕТ"<<endl;
+            cin>>num;
+            while (cin.fail()) {
+                ignoreLine();
+                cout << "Пожалуйста введите число, а не символ!" << endl;
+                cin >> num;
+            }
+            num--;
+            clean();
+        }
+    }while(num!=0);
+    cout << "Работа завершена!"<<endl;
 
     delete[] number_Vehicle;
 }
@@ -160,3 +306,4 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
