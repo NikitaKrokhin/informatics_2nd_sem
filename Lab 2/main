@@ -32,7 +32,7 @@ Car::Car(){
     cout <<"Запись об ТС "<< name <<" создана!"<<endl;
     };
 Car::~Car(){
-        cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
+        cout <<"Запись об ТС "<< name <<" удалена!"<<endl;
     };
 void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_name,int size_arr);
 void clean();
@@ -80,7 +80,12 @@ string Car::get_name(){
 }
 int Car::calculate_count_gas_stations(double length_route){
     calculate_engine_consumption();
-    count_gas_stations=ceil(length_route/(tank_volume/engine_consumption));
+
+    count_gas_stations=length_route*(engine_consumption/100)/tank_volume;
+    if(count_gas_stations>1)
+        count_gas_stations=ceil(count_gas_stations);
+    else
+        count_gas_stations=floor(count_gas_stations);
     return count_gas_stations;
 }
 double Car::get_speed(){
@@ -117,7 +122,7 @@ int main()
 
         while (cin.fail()) {
             ignoreLine();
-            cout << "Пожалуйста введите число а не символ!" << endl;
+            cout << "Пожалуйста введите число, а не символ!" << endl;
             cin >> size_arr;
         }
         if(size_arr > 0){
@@ -150,7 +155,7 @@ int main()
         cin >> num;
             while (cin.fail()) {
                 ignoreLine();
-                cout << "Пожалуйста введите число а не символ!" << endl;
+                cout << "Пожалуйста введите число, а не символ!" << endl;
                 cin >> num;
             }
 
@@ -160,7 +165,7 @@ int main()
             cin >> i;
             while (cin.fail()) {
                 ignoreLine();
-                cout << "Пожалуйста введите число а не символ!" << endl;
+                cout << "Пожалуйста введите число, а не символ!" << endl;
                 cin >> i;
             }
 
@@ -347,3 +352,4 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
