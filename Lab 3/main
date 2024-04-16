@@ -40,10 +40,9 @@ class Fuel_system {
     double tank_volume;
     double remaining_fuel;
 public:
-//     double calculate_remaining_fuel(){   // не дает доступ к пробегу и потреблению вопрос с наследованием
-//        remaining_fuel=tank_volume-get_mileage()*get_engine_consumption();
-//        return remaining_fuel;
-//    }
+    double get_tank_volume(){return tank_volume;}
+    double get_remaining_fuel(){return remaining_fuel;}
+    void set_remaining_fuel(double calc_remaining_fuel){remaining_fuel=calc_remaining_fuel;}
 };
 
 class Vehicle: public Engine,public Fuel_system{
@@ -62,6 +61,7 @@ public:
     double get_speed(){return speed;}
     int get_count_wheel();
     void output();
+    friend double calculate_remaining_fuel(Vehicle* number_Vehicle,int i);
 };
 void Vehicle::output(){
     cout<<"Информация о ТС "<<name<<endl;
@@ -78,6 +78,13 @@ void Vehicle::output(){
     cout<< "Скорость(км/ч): "<<speed<<endl;
 //    calculate_engine_consumption();
 //    cout<< "Потребление топлива(л/100км): "<<engine_consumption<<endl;
+}
+
+double calculate_remaining_fuel(Vehicle* number_Vehicle,int i){ // не дает доступ к пробегу и потреблению вопрос с наследованием
+//    double remaining_fuel=number_Vehicle[i].get_remaining_fuel();
+//    remaining_fuel=number_Vehicle[i].get_tank_volume-number_Vehicle[i].mileage*number_Vehicle[i].get_engine_consumption;
+//    number_Vehicle[i].set_remaining_fuel(remaining_fuel);
+//    return remaining_fuel;
 }
 
 int Vehicle::get_count_wheel(){
@@ -101,6 +108,9 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
     number_Vehicle[i].ptr_wheel=new Wheel[number_Vehicle[i].count_wheel]; //!!!САМАЯ ВАЖНАЯ ТОЧКА ПРОГРАММЫ!!!
+    cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
+    check_input(number_car[i].engine_power);
+    
 }
 Vehicle::~Vehicle(){
         cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
@@ -326,3 +336,4 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
