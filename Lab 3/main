@@ -74,17 +74,17 @@ void Vehicle::output(){
         cout <<endl;
     }
     cout<< "Мощность двигателя(ЛС): "<<engine_power<<endl;
-    get_speed();
+    calculate_speed();
     cout<< "Скорость(км/ч): "<<speed<<endl;
 //    calculate_engine_consumption();
 //    cout<< "Потребление топлива(л/100км): "<<engine_consumption<<endl;
 }
 
 double calculate_remaining_fuel(Vehicle* number_Vehicle,int i){ // не дает доступ к пробегу и потреблению вопрос с наследованием
-//    double remaining_fuel=number_Vehicle[i].get_remaining_fuel();
-//    remaining_fuel=number_Vehicle[i].get_tank_volume-number_Vehicle[i].mileage*number_Vehicle[i].get_engine_consumption;
-//    number_Vehicle[i].set_remaining_fuel(remaining_fuel);
-//    return remaining_fuel;
+    double remaining_fuel=number_Vehicle[i].get_remaining_fuel();
+    remaining_fuel=number_Vehicle[i].get_tank_volume()-number_Vehicle[i].mileage*number_Vehicle[i].get_engine_consumption();
+    number_Vehicle[i].set_remaining_fuel(remaining_fuel);
+    return remaining_fuel;
 }
 
 int Vehicle::get_count_wheel(){
@@ -95,6 +95,14 @@ void Vehicle::calculate_speed(){
         count_wheel=1;
     }
     speed=sqrt(engine_power)*fabs(70/(double)count_wheel-2.5);
+    int count1=0; //подсчет количества изношенных колес
+    for(int i=0;i<count_wheel;i++){    //!В случае ошибки в скорости проверить это место!
+        if(ptr_wheel[i].get_wheel_condition()==0){
+            count1++;
+        }
+    }
+    if(count1>0)
+        speed=speed/double(2*count1);
 }
 Vehicle::Vehicle(){
     cout <<"Запись об ТС "<< name <<" создана!"<<endl;
@@ -104,13 +112,12 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     cin>>number_Vehicle[i].name;
     cout<< "Введите пробег ТС:"<<endl;
     check_input(number_Vehicle[i].mileage); //проверка на числовое значение ранспортных средств
+    cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
+    check_input(number_Vehicle[i].engine_power);
     cout<< "Введите количество колес ТС "<<name<<endl;
     check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
     number_Vehicle[i].ptr_wheel=new Wheel[number_Vehicle[i].count_wheel]; //!!!САМАЯ ВАЖНАЯ ТОЧКА ПРОГРАММЫ!!!
-    cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
-    check_input(number_car[i].engine_power);
-    
 }
 Vehicle::~Vehicle(){
         cout <<"Запись об ТС "<< name <<" удадена!"<<endl;
@@ -336,4 +343,3 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
-
