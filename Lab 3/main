@@ -44,7 +44,6 @@ protected:
     double tank_volume;
 public:
     Fuel_system(){};
-    Fuel_system(string name,Vehicle* number_Vehicle,int i);
     double get_tank_volume(){return tank_volume;}
     double get_remaining_fuel(){return remaining_fuel;}
     void set_remaining_fuel(double calc_remaining_fuel){remaining_fuel=calc_remaining_fuel;}
@@ -145,11 +144,11 @@ void Vehicle::calculate_speed(){
 Vehicle::Vehicle(){
     cout <<"Запись об ТС "<< name <<" создана!"<<endl;
     };
-Fuel_system::Fuel_system(string name,Vehicle* number_Vehicle,int i){
-        cout<<"Бак ТС" << name <<"добавлен!"<<endl;
-        cout<<"Введите объем бака"<<endl;
-        cin>>number_Vehicle[i].tank_volume;
-    }
+//Fuel_system::Fuel_system(string name,Vehicle* number_Vehicle,int i){
+//        cout<<"Бак ТС" << name <<"добавлен!"<<endl;
+//        cout<<"Введите объем бака"<<endl;
+//        cin>>number_Vehicle[i].tank_volume;
+//    }
 Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     cout<< "Введите название ТС:"<<endl;
     cin>>number_Vehicle[i].name;
@@ -157,7 +156,8 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     check_input(number_Vehicle[i].mileage); //проверка на числовое значение ранспортных средств
     cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
     check_input(number_Vehicle[i].engine_power);
-    Fuel_system(number_Vehicle[i].get_name(),number_Vehicle,i);
+    cout<< "Введите объем бака ТС (л) "<<name<<endl;
+    check_input(number_Vehicle[i].tank_volume);
     cout<< "Введите количество колес ТС "<<name<<endl;
     check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
@@ -388,4 +388,3 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
-
