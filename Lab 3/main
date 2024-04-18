@@ -36,19 +36,26 @@ double Engine::calculate_engine_consumption(){
       return engine_consumption;
 }
 
-class Fuel_system {
-    double tank_volume;
+class Fuel_system{
+
     double remaining_fuel;
+protected:
+    int count_gas_stations;
+    double tank_volume;
 public:
+    Fuel_system(){};
+    Fuel_system(string name,Vehicle* number_Vehicle,int i);
     double get_tank_volume(){return tank_volume;}
     double get_remaining_fuel(){return remaining_fuel;}
     void set_remaining_fuel(double calc_remaining_fuel){remaining_fuel=calc_remaining_fuel;}
 };
 
+
 class Vehicle: public Engine,public Fuel_system{
     int count_wheel;
     double mileage;
     double speed;
+    double travel_time;
     string name;
     int main_flag=0;
 public:
@@ -62,6 +69,10 @@ public:
     int get_count_wheel();
     void output();
     friend double calculate_remaining_fuel(Vehicle* number_Vehicle,int i);
+    int calculate_count_gas_stations(double length_route);
+    double calculate_travel_time(double length_route);
+    int get_main_flag();
+    string get_name();
 };
 void Vehicle::output(){
     cout<<"Информация о ТС "<<name<<endl;
@@ -76,12 +87,39 @@ void Vehicle::output(){
     cout<< "Мощность двигателя(ЛС): "<<engine_power<<endl;
     calculate_speed();
     cout<< "Скорость(км/ч): "<<speed<<endl;
-//    calculate_engine_consumption();
-//    cout<< "Потребление топлива(л/100км): "<<engine_consumption<<endl;
+    calculate_engine_consumption();
+    cout<< "Потребление топлива(л/100км): "<<get_engine_consumption()<<endl;
+    main_flag=1;
 }
 
-double calculate_remaining_fuel(Vehicle* number_Vehicle,int i){ // не дает доступ к пробегу и потреблению вопрос с наследованием
-    double remaining_fuel=number_Vehicle[i].get_remaining_fuel();
+double Vehicle::calculate_travel_time(double length_route){
+    calculate_speed();
+    get_speed();
+    travel_time=length_route/speed;
+    return travel_time;
+ }
+
+int Vehicle::calculate_count_gas_stations(double length_route){  //!Работоспособность под вопросом
+    calculate_engine_consumption();
+    cout<<"!Начало проверки значений!"<<endl;
+    cout<<"Объем бака: "<<tank_volume<<endl;
+    count_gas_stations=length_route*(get_engine_consumption()/100)/tank_volume;
+    if(count_gas_stations>1)
+        count_gas_stations=ceil(count_gas_stations);
+    else
+        count_gas_stations=floor(count_gas_stations);
+    return count_gas_stations;
+}
+
+int Vehicle::get_main_flag(){
+    return main_flag;
+}
+string Vehicle::get_name(){
+    return name;
+}
+
+double calculate_remaining_fuel(Vehicle* number_Vehicle,int i){
+    double remaining_fuel=number_Vehicle[i].get_remaining_fuel();   //!Не проверял на корректность работы
     remaining_fuel=number_Vehicle[i].get_tank_volume()-number_Vehicle[i].mileage*number_Vehicle[i].get_engine_consumption();
     number_Vehicle[i].set_remaining_fuel(remaining_fuel);
     return remaining_fuel;
@@ -107,6 +145,11 @@ void Vehicle::calculate_speed(){
 Vehicle::Vehicle(){
     cout <<"Запись об ТС "<< name <<" создана!"<<endl;
     };
+Fuel_system::Fuel_system(string name,Vehicle* number_Vehicle,int i){
+        cout<<"Бак ТС" << name <<"добавлен!"<<endl;
+        cout<<"Введите объем бака"<<endl;
+        cin>>number_Vehicle[i].tank_volume;
+    }
 Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     cout<< "Введите название ТС:"<<endl;
     cin>>number_Vehicle[i].name;
@@ -114,6 +157,7 @@ Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
     check_input(number_Vehicle[i].mileage); //проверка на числовое значение ранспортных средств
     cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
     check_input(number_Vehicle[i].engine_power);
+    Fuel_system(number_Vehicle[i].get_name(),number_Vehicle,i);
     cout<< "Введите количество колес ТС "<<name<<endl;
     check_input(number_Vehicle[i].count_wheel); //проверка на числовое значение количества колес
     number_Vehicle[i].main_flag=1;
@@ -138,6 +182,7 @@ int main()
     int flag_time_track=0;
     int size_arr=0;
 
+
     int check=0;
     do{
         cout << "Введите количество транспортных средств!" << endl;
@@ -157,11 +202,10 @@ int main()
     }while(check!=1);
     clean();
 
+    double* travel_time_arr =new double[size_arr];
+    double* count_gas_stations =new double[size_arr];
+    string* arr_name=new string[size_arr];
     Vehicle* number_Vehicle=new Vehicle[size_arr]; // создается класс транспортных средств с n количеством объектов и выводится натпись о том что создалось
-
-//
-//    Vehicle(0, number_Vehicle); // тест
-//    cout<<number_Vehicle[0].ptr_wheel[0].get_wheel_condition()<<endl; //на это месте программа ложится (Уже нет !!!!!!!!)
 
     do{
         cout<<"1-Ввод данных о новом ТС"<<endl;
@@ -219,7 +263,6 @@ int main()
                 clean();
                 i--;
                 number_Vehicle[i].output();
-                //number_car[i].output();
             }else{
                 cout<<"Такого ТС не существует!"<<endl;
             }
@@ -250,39 +293,41 @@ int main()
             clean();
 
         }else if(num==4){
-//            int check=0;
-//            for(int i=0;i<size_arr;i++){
-//                check=check+number_car[i].get_main_flag();
-//            }
-//            if(check==size_arr){
-//                if(flag_track==1){
-//                    //cout<<"length_route "<<length_route<<endl;
-//                    for(int i=0;i<size_arr;i++){
-//                           travel_time_arr[i]=number_car[i].calculate_travel_time(length_route);
-//                           count_gas_stations[i]=number_car[i].calculate_count_gas_stations(length_route);
-//                            arr_name[i]=number_car[i].get_name();
-//                    }
-
-//                    cout<<"Расчет прохождения трассы проведен!"<<endl;
-//                    flag_time_track=1;
-//                }else{
-//                    cout<<"Для использования функции введите длину трассы!"<<endl;
-//                }
-//            }else{
-//                cout<<"Введены данные не о всех ТС!"<<endl;
-//            }
-//            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
-//                    cin.get();
-//                    cin.get();
-//                    clean();
-        }else if(num==5){
+            int check=0;
             for(int i=0;i<size_arr;i++){
-//                cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << endl;
-//                cout<< "Часов:" <<(int)(travel_time_arr[i])<<"\t";
-//                cout<< "Минут:" <<(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)<<"\t";
-//                cout<< "Секунд:" <<(int)(travel_time_arr[i]*3600-(int)(travel_time_arr[i])*3600-(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)*60)<<endl;
-//                cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
+                check=check+number_Vehicle[i].get_main_flag();
             }
+            if(check==size_arr){
+                if(flag_track==1){
+
+                    for(int i=0;i<size_arr;i++){
+                        travel_time_arr[i]=number_Vehicle[i].calculate_travel_time(length_route);
+                        count_gas_stations[i]=number_Vehicle[i].calculate_count_gas_stations(length_route);
+                        arr_name[i]=number_Vehicle[i].get_name();
+                    }
+
+                    cout<<"Расчет прохождения трассы проведен!"<<endl;
+                    flag_time_track=1;
+                }else{
+                    cout<<"Для использования функции введите длину трассы!"<<endl;
+                }
+            }else{
+                cout<<"Введены данные не о всех ТС!"<<endl;
+            }
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+                    cin.get();
+                    cin.get();
+                    clean();
+        }else if(num==5){
+           // cout<< "Время" <<(travel_time_arr[i])<<endl;
+//           // comparison(travel_time_arr,count_gas_stations,arr_name,size_arr);
+           for(int i=0;i<size_arr;i++){
+                cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << endl;
+                cout<< "Часов:" <<(int)(travel_time_arr[i])<<"\t";
+                cout<< "Минут:" <<(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)<<"\t";
+                cout<< "Секунд:" <<(int)(travel_time_arr[i]*3600-(int)(travel_time_arr[i])*3600-(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)*60)<<endl;
+                cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
+           }
             cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
             cin.get();
             cin.get();
@@ -343,3 +388,4 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
