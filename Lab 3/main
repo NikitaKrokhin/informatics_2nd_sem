@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-
+//добавить сортировку в 5 меню и осушествить поломку колес
 using namespace std;
 
 void check_input(double &param);
