@@ -1,6 +1,7 @@
 #include <iostream>
+#include <cstdlib>
 #include <cmath>
-// осушествить поломку колес
+
 using namespace std;
 
 void check_input(double &param);
@@ -14,12 +15,29 @@ public:
     int get_wheel_mileage(){return wheel_mileage;}
     Wheel(){cout<<"Колесо добавлено"<<endl;};
     void inp_Wheel(int i);
+    void stat_of_wheel();
 };
-void Wheel::inp_Wheel(int i){
+void Wheel::inp_Wheel(int i){  //нет возможности использовать конструктор т.к. в Vehicle нету этого конструктора для обращения
         cout<<"\nВведите изношенность колеса № "<<i+1<<"\n1-Целое\n0-Изношенное"<<endl;
         cin>>wheel_condition;
         cout<<"Введите пробег колеса"<<endl;
         cin>>wheel_mileage;
+}
+void Wheel::stat_of_wheel(){
+    if(wheel_condition){
+        int arr_of_stat[(int)wheel_mileage];
+        int count_0=0;
+        for(int i=0;i<(int)wheel_mileage;i++){
+            int start = 0;
+            int end = 1;
+            arr_of_stat[i] = rand() % (end - start + 1) + start;
+            if(arr_of_stat[i]==0)
+            count_0++;
+        }
+        if(count_0>10){
+            wheel_condition=0;
+        }
+    }
 }
 
 class Engine{
@@ -244,6 +262,11 @@ int main()
                 for(int j=0;j<number_Vehicle[i].get_count_wheel();j++){
                     number_Vehicle[i].ptr_wheel[j].inp_Wheel(j);
                 }
+                //!ввод закончен начинается проверка статусов колес
+                for(int j=0;j<number_Vehicle[i].get_count_wheel();j++){
+                    number_Vehicle[i].ptr_wheel[j].stat_of_wheel();
+                }
+
                 clean();
             }else{
                 cout<<"Такого ТС не существует!"<<endl;
@@ -421,3 +444,4 @@ void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_
               }
             }
 }
+
