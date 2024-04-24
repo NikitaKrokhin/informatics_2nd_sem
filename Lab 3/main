@@ -18,10 +18,19 @@ public:
     void stat_of_wheel();
 };
 void Wheel::inp_Wheel(int i){  //нет возможности использовать конструктор т.к. в Vehicle нету этого конструктора для обращения
+    int flag=0;
+    do{
         cout<<"\nВведите изношенность колеса № "<<i+1<<"\n1-Целое\n0-Изношенное"<<endl;
         cin>>wheel_condition;
-        cout<<"Введите пробег колеса"<<endl;
-        cin>>wheel_mileage;
+        if((wheel_condition==1)||(wheel_condition==0)){
+            flag=1;
+        }else{
+            cout<<"Повторите ввод,данные невозможны!!!"<<endl;
+        }
+    }while(flag!=1);
+    flag=0;
+    cout<<"Введите пробег колеса"<<endl;
+    check_input(wheel_mileage);
 }
 void Wheel::stat_of_wheel(){
     if(wheel_condition){
@@ -45,6 +54,7 @@ class Engine{
 protected:
     double engine_power;
 public:
+    double get_engine_power(){return engine_power;}
     double get_engine_consumption(){return engine_consumption;}
     double calculate_engine_consumption();
 };
@@ -84,29 +94,32 @@ public:
     void calculate_speed();
     double get_speed(){return speed;}
     int get_count_wheel();
-    void output();
+//    void output();
     friend double calculate_remaining_fuel(Vehicle* number_Vehicle,int i);
     int calculate_count_gas_stations(double length_route);
     friend double calculate_travel_time(Vehicle* number_Vehicle,double length_route,int i);
     int get_main_flag();
     string get_name();
 };
-void Vehicle::output(){
-    cout<<"Информация о ТС "<<name<<endl;
-    cout<< "Количество колес: "<<count_wheel<<endl;
-    for(int i=0;i<count_wheel;i++){
-        cout<< "Состояние колеса "<< i+1 <<": "<<endl;
-        cout<<ptr_wheel[i].get_wheel_condition()<<endl;
-        cout<< "Пробег колеса "<< i+1 <<": "<<endl;
-        cout<<ptr_wheel[i].get_wheel_mileage()<<endl;
-        cout <<endl;
+ostream &operator << (ostream &srteam,Vehicle Obj){
+    if(Obj.get_main_flag()==1){
+        cout<<"Информация о ТС "<<Obj.get_name()<<endl;
+        cout<< "Количество колес: "<<Obj.get_count_wheel()<<endl;
+        for(int i=0;i<Obj.get_count_wheel();i++){
+            cout<< "Состояние колеса "<< i+1 <<": "<<endl;
+            cout<<Obj.ptr_wheel[i].get_wheel_condition()<<endl;
+            cout<< "Пробег колеса "<< i+1 <<": "<<endl;
+            cout<<Obj.ptr_wheel[i].get_wheel_mileage()<<endl;
+            cout <<endl;
+        }
+        cout<< "Мощность двигателя(ЛС): "<<Obj.get_engine_power()<<endl;
+        Obj.calculate_speed();
+        cout<< "Скорость(км/ч): "<<Obj.get_speed()<<endl;
+        Obj.calculate_engine_consumption();
+        cout<< "Потребление топлива(л/100км): "<<Obj.get_engine_consumption()<<endl;
     }
-    cout<< "Мощность двигателя(ЛС): "<<engine_power<<endl;
-    calculate_speed();
-    cout<< "Скорость(км/ч): "<<speed<<endl;
-    calculate_engine_consumption();
-    cout<< "Потребление топлива(л/100км): "<<get_engine_consumption()<<endl;
-    main_flag=1;
+    else
+        cout<<"!ДЛЯ ВЫВОДА ДАННЫХ, СНАЧАЛА ВВЕДИТЕ ДАННЫЕ!"<<endl;
 }
 
 double calculate_travel_time(Vehicle* number_Vehicle,double length_route,int i){
@@ -170,6 +183,7 @@ Vehicle::Vehicle(){
 //        cin>>number_Vehicle[i].tank_volume;
 //    }
 Vehicle::Vehicle(int i,Vehicle* number_Vehicle){
+    number_Vehicle[i].main_flag=1;
     cout<< "Введите название ТС:"<<endl;
     cin>>number_Vehicle[i].name;
     cout<< "Введите пробег ТС:"<<endl;
@@ -288,7 +302,7 @@ int main()
             if(i<=size_arr&&i>0){
                 clean();
                 i--;
-                number_Vehicle[i].output();
+                cout<<number_Vehicle[i];  //перегрузка оператора вывода для класса ТС
             }else{
                 cout<<"Такого ТС не существует!"<<endl;
             }
@@ -392,7 +406,7 @@ void check_input(double &param){
     int flag=0;
     do{
         cin>>param;
-        if(param>0){
+        if(param>=0){
             flag=1;
         }else{
             cout<<"Повторите ввод,данные невозможны!!!"<<endl;
@@ -444,4 +458,3 @@ void comparison(double* travel_time_arr,double* count_gas_stations, string* arr_
               }
             }
 }
-
