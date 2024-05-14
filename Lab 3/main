@@ -13,6 +13,7 @@ class Wheel{
 public:
     int get_wheel_condition(){return wheel_condition;}
     int get_wheel_mileage(){return wheel_mileage;}
+    void set_wheel_mileage(double length_route){wheel_mileage+=length_route;}
     Wheel(){cout<<"Колесо добавлено"<<endl;};
     void inp_Wheel(int i);
     void stat_of_wheel();
@@ -75,6 +76,7 @@ public:
     double get_tank_volume(){return tank_volume;}
     double get_remaining_fuel(){return remaining_fuel;}
     void set_remaining_fuel(double calc_remaining_fuel){remaining_fuel=calc_remaining_fuel;}
+    double get_count_gas_stations(){return count_gas_stations;}
 };
 
 
@@ -94,7 +96,6 @@ public:
     void calculate_speed();
     double get_speed(){return speed;}
     int get_count_wheel();
-//    void output();
     friend double calculate_remaining_fuel(Vehicle* number_Vehicle,int i);
     int calculate_count_gas_stations(double length_route);
     friend double calculate_travel_time(Vehicle* number_Vehicle,double length_route,int i);
@@ -103,20 +104,20 @@ public:
 };
 ostream &operator << (ostream &srteam,Vehicle Obj){
     if(Obj.get_main_flag()==1){
-        cout<<"Информация о ТС "<<Obj.get_name()<<endl;
-        cout<< "Количество колес: "<<Obj.get_count_wheel()<<endl;
+        srteam<<"Информация о ТС "<<Obj.get_name()<<endl;
+        srteam<< "Количество колес: "<<Obj.get_count_wheel()<<endl;
         for(int i=0;i<Obj.get_count_wheel();i++){
-            cout<< "Состояние колеса "<< i+1 <<": "<<endl;
-            cout<<Obj.ptr_wheel[i].get_wheel_condition()<<endl;
-            cout<< "Пробег колеса "<< i+1 <<": "<<endl;
-            cout<<Obj.ptr_wheel[i].get_wheel_mileage()<<endl;
-            cout <<endl;
+            srteam<< "Состояние колеса "<< i+1 <<": "<<endl;
+            srteam<<Obj.ptr_wheel[i].get_wheel_condition()<<endl;
+            srteam<< "Пробег колеса "<< i+1 <<": "<<endl;
+            srteam<<Obj.ptr_wheel[i].get_wheel_mileage()<<endl;
+            srteam <<endl;
         }
-        cout<< "Мощность двигателя(ЛС): "<<Obj.get_engine_power()<<endl;
+        srteam<< "Мощность двигателя(ЛС): "<<Obj.get_engine_power()<<endl;
         Obj.calculate_speed();
-        cout<< "Скорость(км/ч): "<<Obj.get_speed()<<endl;
+        srteam<< "Скорость(км/ч): "<<Obj.get_speed()<<endl;
         Obj.calculate_engine_consumption();
-        cout<< "Потребление топлива(л/100км): "<<Obj.get_engine_consumption()<<endl;
+        srteam<< "Потребление топлива(л/100км): "<<Obj.get_engine_consumption()<<endl;
     }
     else
         cout<<"!ДЛЯ ВЫВОДА ДАННЫХ, СНАЧАЛА ВВЕДИТЕ ДАННЫЕ!"<<endl;
@@ -126,6 +127,10 @@ double calculate_travel_time(Vehicle* number_Vehicle,double length_route,int i){
     number_Vehicle[i].calculate_speed();
     number_Vehicle[i].get_speed();
     number_Vehicle[i].travel_time=length_route/number_Vehicle[i].speed;
+    number_Vehicle[i].mileage+=length_route;
+    for(int j=0;j<number_Vehicle[i].count_wheel;j++){
+        number_Vehicle[i].ptr_wheel[j].set_wheel_mileage(length_route);
+    }
     return number_Vehicle[i].travel_time;
  }
 
@@ -150,9 +155,9 @@ string Vehicle::get_name(){
     return name;
 }
 
-double calculate_remaining_fuel(Vehicle* number_Vehicle,int i){
+double calculate_remaining_fuel(Vehicle* number_Vehicle,int i,double length_route){
     double remaining_fuel=number_Vehicle[i].get_remaining_fuel();
-    remaining_fuel=number_Vehicle[i].get_tank_volume()-number_Vehicle[i].mileage*number_Vehicle[i].get_engine_consumption();
+    remaining_fuel=(number_Vehicle[i].get_tank_volume()+number_Vehicle[i].get_count_gas_stations())-length_route*number_Vehicle[i].calculate_engine_consumption()/100;
     number_Vehicle[i].set_remaining_fuel(remaining_fuel);
     return remaining_fuel;
 }
@@ -276,10 +281,7 @@ int main()
                 for(int j=0;j<number_Vehicle[i].get_count_wheel();j++){
                     number_Vehicle[i].ptr_wheel[j].inp_Wheel(j);
                 }
-                //!ввод закончен начинается проверка статусов колес
-                for(int j=0;j<number_Vehicle[i].get_count_wheel();j++){
-                    number_Vehicle[i].ptr_wheel[j].stat_of_wheel();
-                }
+
 
                 clean();
             }else{
@@ -343,7 +345,13 @@ int main()
                         travel_time_arr[i]=calculate_travel_time(number_Vehicle,length_route,i);
                         count_gas_stations[i]=number_Vehicle[i].calculate_count_gas_stations(length_route);
                         arr_name[i]=number_Vehicle[i].get_name();
+                        calculate_remaining_fuel(number_Vehicle,i,length_route);
                     }
+
+            //!круг закончен начинается проверка статусов колес
+                for(int j=0;j<number_Vehicle[i].get_count_wheel();j++){
+                    number_Vehicle[i].ptr_wheel[j].stat_of_wheel();
+                }
 
                     cout<<"Расчет прохождения трассы проведен!"<<endl;
                     flag_time_track=1;
@@ -359,12 +367,14 @@ int main()
                     clean();
         }else if(num==5){
             comparison(travel_time_arr,count_gas_stations,arr_name,size_arr);
+
            for(int i=0;i<size_arr;i++){
                 cout<<"Время прохождения трассы автомобилем "<< arr_name[i] << endl;
                 cout<< "Часов:" <<(int)(travel_time_arr[i])<<"\t";
                 cout<< "Минут:" <<(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)<<"\t";
                 cout<< "Секунд:" <<(int)(travel_time_arr[i]*3600-(int)(travel_time_arr[i])*3600-(int)((travel_time_arr[i]-(int)travel_time_arr[i])*60)*60)<<endl;
                 cout<<"Количество запарвок: "<<count_gas_stations[i]<<endl;
+                cout<<"Остаток топлива: "<<number_Vehicle[i].get_remaining_fuel() <<endl;
            }
             cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
             cin.get();
