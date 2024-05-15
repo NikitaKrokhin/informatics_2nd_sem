@@ -30,6 +30,7 @@ protected:
     int count_gas_stations;
     double tank_volume;
 public:
+    void set_remaining_fuel(double calc_remaining_fuel){remaining_fuel=calc_remaining_fuel;}
     double get_tank_volume(){return tank_volume;}
     double get_remaining_fuel(){return remaining_fuel;}
     double get_count_gas_stations(){return count_gas_stations;}
@@ -56,20 +57,22 @@ public:
     Wheel* ptr_wheel;
     Vehicle();
     void calculate_speed();
-    friend double calculate_remaining_fuel(Vehicle* number_Vehicle,int i);
+    friend double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route);
     int calculate_count_gas_stations(double length_route);
-    friend double calculate_travel_time(Vehicle* number_Vehicle,double length_route,int i);
+    friend double calculate_travel_time(Vehicle& vctVehicle,double length_route);
     int get_main_flag(){return main_flag;};
     int get_count_wheel(){return count_wheel;};
     double get_speed(){return speed;}
     double get_mileage(){return mileage;}
+    double get_travel_time(){return travel_time;}
     string get_name(){return name;};
     void set_name(string inp_name){name=inp_name;};
     void set_mileage(double inp_mileage){mileage=inp_mileage;};
-    void set_count_wheel(double inp_count_wheel){count_wheel=inp_count_wheel;};
+    void set_count_wheel(int inp_count_wheel){count_wheel=inp_count_wheel;};
     void set_tank_volume(double inp_tank_volume){tank_volume=inp_tank_volume;};
     void set_engine_power(double inp_engine_power){engine_power=inp_engine_power;};
     void set_main_flag(int inp_main_flag){main_flag=inp_main_flag;};
+    void set_travel_time(int inp_travel_time){main_flag=inp_travel_time;};
 };
 
 ostream &operator << (ostream &srteam,Vehicle Obj){
@@ -113,6 +116,7 @@ istream &operator >> (istream &srteam,Vehicle& Obj){
     srteam>>count_wheel;
     Obj.set_count_wheel(count_wheel);
     Obj.set_main_flag(1);
+    delete[] Obj.ptr_wheel;
     Obj.ptr_wheel=new Wheel[Obj.get_count_wheel()];
 }
 
@@ -152,11 +156,45 @@ void Vehicle::calculate_speed(){
         speed=speed/double(2*count1);
 }
 
+void Wheel::inp_Wheel(int i){
+    int flag=0;
+    do{
+        cout<<"\nВведите изношенность колеса № "<<i+1<<"\n1-Целое\n0-Изношенное"<<endl;
+        cin>>wheel_condition;
+        if((wheel_condition==1)||(wheel_condition==0)){
+            flag=1;
+        }else{
+            cout<<"Повторите ввод,данные невозможны!!!"<<endl;
+        }
+    }while(flag!=1);
+    flag=0;
+    cout<<"Введите пробег колеса"<<endl;
+    check_input(wheel_mileage);
+}
+
+double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route){
+    double remaining_fuel=vctVehicle.get_remaining_fuel();
+    remaining_fuel=vctVehicle.get_tank_volume()-(length_route*vctVehicle.calculate_engine_consumption()/100);
+    vctVehicle.set_remaining_fuel(remaining_fuel);
+    return remaining_fuel;
+}
+
+double calculate_travel_time(Vehicle& vctVehicle,double length_route){
+    vctVehicle.calculate_speed();
+    vctVehicle.get_speed();
+    vctVehicle.travel_time=length_route/vctVehicle.speed;
+    vctVehicle.mileage+=length_route;
+    for(int j=0;j<vctVehicle.count_wheel;j++){
+        vctVehicle.ptr_wheel[j].set_wheel_mileage(length_route);
+    }
+    return vctVehicle.travel_time;
+ }
 
 int main()
 {
     setlocale(LC_CTYPE,"");
 
+    int count_laps=0;
     int num=0;
     double length_route=.0;
     int i=0;
@@ -164,10 +202,9 @@ int main()
     int flag_time_track=0;
     int check=0;
 
+    vector<double> travel_time_vct;
+    vector<string> vct_name;
 
-//    double* travel_time_arr =new double[size_arr];
-//    double* count_gas_stations =new double[size_arr];
-//    string* arr_name=new string[size_arr];
 
     vector <Vehicle> vctVehicle;
 
@@ -204,12 +241,12 @@ int main()
                 cin>>vctVehicle.at(i);
 
             }else{
+                i--;
                 vctVehicle.push_back(Vehicle());
-//                for(int j=0;j<vctVehicle[i].get_count_wheel();j++){
-//                    vctVehicle[i].ptr_wheel[j].inp_Wheel(j);
-//                }
-//                clean();
             }
+            for(int j=0;j<vctVehicle.at(i).get_count_wheel();j++){
+                    vctVehicle.at(i).ptr_wheel[j].inp_Wheel(j);
+                }
             clean();
 
         }
@@ -232,6 +269,8 @@ int main()
             clean();
         }else if(num==3){
             clean();
+            cout<<"Введите количество кругов!"<<endl;
+            cin>>count_laps;
             cout<<"Введите протяженность круга (км)!"<<endl;
             cin>>length_route;
             while (cin.fail()) {
@@ -253,6 +292,32 @@ int main()
 
         }else if(num==4){
 
+            int check=0;
+            for(int i=0;i<vctVehicle.size();i++){
+                check+=vctVehicle.at(i).get_main_flag();
+            }
+            if(check==vctVehicle.size()){
+                if(flag_track==1){
+                    travel_time_vct.clear();
+                    vct_name.clear();
+                    for(int i=0;i<vctVehicle.size();i++){
+                        calculate_travel_time(vctVehicle.at(i),length_route);
+                        calculate_remaining_fuel(vctVehicle.at(i),length_route);
+                    }
+                    cout<<"Расчет прохождения трассы проведен!"<<endl;
+                    flag_time_track=1;
+                }else{
+                    cout<<"Для использования функции введите длину трассы!"<<endl;
+                }
+            }else{
+                cout<<"Введены данные не о всех ТС!"<<endl;
+            }
+            cout<<"Время прохождения трассы: "<< vctVehicle.at(0).get_travel_time()<<endl;
+            cout<<"Остаток топлива: "<< vctVehicle.at(0).get_remaining_fuel()<<endl;  //!остановился на этом месте (все работает) количество заправок больше не нужно считает все для одного круга после этого проверять и если что прибавять время
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+                    cin.get();
+                    cin.get();
+                    clean();
         }else if(num==5){
 
         }
@@ -312,3 +377,4 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
