@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 
 using namespace std;
 
@@ -50,7 +51,7 @@ class Vehicle:public Fuel_system,public Engine{
     int count_wheel;
     double mileage;
     double speed;
-    double travel_time;
+    double travel_time=0;
     string name;
     int main_flag=0;
 public:
@@ -59,7 +60,7 @@ public:
     void calculate_speed();
     friend double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route);
     int calculate_count_gas_stations(double length_route);
-    friend double calculate_travel_time(Vehicle& vctVehicle,double length_route);
+    friend double calculate_passage_section_route(Vehicle& vctVehicle,double length_route);
     int get_main_flag(){return main_flag;};
     int get_count_wheel(){return count_wheel;};
     double get_speed(){return speed;}
@@ -72,7 +73,7 @@ public:
     void set_tank_volume(double inp_tank_volume){tank_volume=inp_tank_volume;};
     void set_engine_power(double inp_engine_power){engine_power=inp_engine_power;};
     void set_main_flag(int inp_main_flag){main_flag=inp_main_flag;};
-    void set_travel_time(int inp_travel_time){main_flag=inp_travel_time;};
+    void set_travel_time(int inp_travel_time){travel_time+=inp_travel_time;};
 };
 
 ostream &operator << (ostream &srteam,Vehicle Obj){
@@ -153,7 +154,7 @@ void Vehicle::calculate_speed(){
         }
     }
     if(count1>0)
-        speed=speed/double(2*count1);
+        speed=speed/(double(4/3*count1));
 }
 
 void Wheel::inp_Wheel(int i){
@@ -172,6 +173,23 @@ void Wheel::inp_Wheel(int i){
     check_input(wheel_mileage);
 }
 
+void Wheel::stat_of_wheel(){
+    if(wheel_condition){
+        int arr_of_stat[(int)wheel_mileage];
+        int count_0=0;
+        for(int i=0;i<(int)wheel_mileage;i++){
+            int start = 0;
+            int end = 1;
+            arr_of_stat[i] = rand() % (end - start + 1) + start;
+            if(arr_of_stat[i]==0)
+            count_0++;
+        }
+        if(count_0>10){
+            wheel_condition=0;
+        }
+    }
+}
+
 double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route){
     double remaining_fuel=vctVehicle.get_remaining_fuel();
     remaining_fuel=vctVehicle.get_tank_volume()-(length_route*vctVehicle.calculate_engine_consumption()/100);
@@ -179,16 +197,29 @@ double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route){
     return remaining_fuel;
 }
 
-double calculate_travel_time(Vehicle& vctVehicle,double length_route){
-    vctVehicle.calculate_speed();
-    vctVehicle.get_speed();
-    vctVehicle.travel_time=length_route/vctVehicle.speed;
-    vctVehicle.mileage+=length_route;
-    for(int j=0;j<vctVehicle.count_wheel;j++){
-        vctVehicle.ptr_wheel[j].set_wheel_mileage(length_route);
+double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
+    double time=length_route/(vctVehicle.get_speed()/3600);
+    while(time>0){
+        //прибавка к пробегу машинки за 1 секунду
+        double new_mileage=vctVehicle.get_mileage()+vctVehicle.get_speed()/3600;
+        vctVehicle.set_mileage(new_mileage);
+        //прибавка к пробегу каждого колеса машинки за 1 секунду и сразу же проверка статуса этого колеса с увеличением пробега
+        for(int k=0;k<vctVehicle.get_count_wheel();k++){
+            double wh_milleage=vctVehicle.get_speed()/3600;
+            vctVehicle.ptr_wheel[k].set_wheel_mileage(wh_milleage);
+            vctVehicle.ptr_wheel[k].stat_of_wheel();
+        }
+        length_route=length_route-vctVehicle.get_speed()/3600;
+        vctVehicle.travel_time+=1; //считаем время прохождения в секундах
+        //перерасчет скорости
+        vctVehicle.calculate_speed();
+        time=length_route/(vctVehicle.get_speed()/3600);
+        cout<<time<<endl;
+        cout<<length_route<<endl;
+        cout<<vctVehicle.get_speed()/3600<<endl;
     }
-    return vctVehicle.travel_time;
- }
+
+}
 
 int main()
 {
@@ -301,19 +332,19 @@ int main()
                     travel_time_vct.clear();
                     vct_name.clear();
                     for(int i=0;i<vctVehicle.size();i++){
-                        calculate_travel_time(vctVehicle.at(i),length_route);
+                        calculate_passage_section_route(vctVehicle.at(i),length_route);
                         calculate_remaining_fuel(vctVehicle.at(i),length_route);
-                    }
-                    cout<<"Расчет прохождения трассы проведен!"<<endl;
-                    flag_time_track=1;
+                        cout<<"Результаты прохождения первого круга:"<<endl;
+                        cout<<"Время прохождения трассы: "<< vctVehicle.at(i).get_travel_time()<<endl;
+                        cout<<"Остаток топлива: "<< vctVehicle.at(i).get_remaining_fuel()<<endl;
+                    } //результаты по прохождению 1 круга
                 }else{
                     cout<<"Для использования функции введите длину трассы!"<<endl;
                 }
             }else{
                 cout<<"Введены данные не о всех ТС!"<<endl;
             }
-            cout<<"Время прохождения трассы: "<< vctVehicle.at(0).get_travel_time()<<endl;
-            cout<<"Остаток топлива: "<< vctVehicle.at(0).get_remaining_fuel()<<endl;  //!остановился на этом месте (все работает) количество заправок больше не нужно считает все для одного круга после этого проверять и если что прибавять время
+
             cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
                     cin.get();
                     cin.get();
