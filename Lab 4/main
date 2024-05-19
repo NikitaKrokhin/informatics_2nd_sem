@@ -32,7 +32,7 @@ protected:
     int count_gas_stations;
     double tank_volume;
 public:
-    void set_remaining_fuel(double calc_remaining_fuel){remaining_fuel=calc_remaining_fuel;}
+    void set_remaining_fuel(double inp_remaining_fuel){remaining_fuel=inp_remaining_fuel;}
     double get_tank_volume(){return tank_volume;}
     double get_remaining_fuel(){return remaining_fuel;}
     double get_count_gas_stations(){return count_gas_stations;}
@@ -75,6 +75,7 @@ public:
     void set_engine_power(double inp_engine_power){engine_power=inp_engine_power;};
     void set_main_flag(int inp_main_flag){main_flag=inp_main_flag;};
     void set_travel_time(int inp_travel_time){travel_time+=inp_travel_time;};
+    void set_all_travel_time(int inp_travel_time){travel_time=inp_travel_time;};
 };
 
 ostream &operator << (ostream &srteam,Vehicle Obj){
@@ -93,6 +94,7 @@ ostream &operator << (ostream &srteam,Vehicle Obj){
         srteam<< "Скорость(км/ч): "<<Obj.get_speed()<<endl;
         Obj.calculate_engine_consumption();
         srteam<< "Потребление топлива(л/100км): "<<Obj.get_engine_consumption()<<endl;
+        srteam<< "Остаток топлива в баке(л/100км): "<<Obj.get_remaining_fuel()<<endl;
     }
     else
         cout<<"!ДЛЯ ВЫВОДА ДАННЫХ, СНАЧАЛА ВВЕДИТЕ ДАННЫЕ!"<<endl;
@@ -193,12 +195,19 @@ void Wheel::stat_of_wheel(){
 
 double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route){
     double remaining_fuel=vctVehicle.get_remaining_fuel();
-    remaining_fuel=vctVehicle.get_tank_volume()-(length_route*vctVehicle.calculate_engine_consumption()/100);
+    remaining_fuel=remaining_fuel-(length_route*vctVehicle.calculate_engine_consumption()/100);
     vctVehicle.set_remaining_fuel(remaining_fuel);
     return remaining_fuel;
 }
 
 double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
+    int count_crh=0;
+    double all_mileage=vctVehicle.get_mileage();
+    vector <double> mileage_wheel_vct;
+    mileage_wheel_vct.clear();
+    for(int a=0;a< vctVehicle.get_count_wheel();a++){
+        mileage_wheel_vct.push_back(vctVehicle.ptr_wheel[a].get_wheel_mileage());
+    }
     double length=length_route;
     vctVehicle.calculate_speed();
     double time=length_route/(vctVehicle.get_speed()/3600);
@@ -218,16 +227,30 @@ double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
             //перерасчет скорости
             vctVehicle.calculate_speed();
             time=length_route/(vctVehicle.get_speed()/3600);
+            calculate_remaining_fuel(vctVehicle,vctVehicle.get_speed()/3600);
+
+        //проверка на поломку всех колес
+        count_crh=0;
+        for(int k=0;k<vctVehicle.get_count_wheel();k++){
+            if(vctVehicle.ptr_wheel[k].get_wheel_condition()==0){
+                count_crh++;
+            }
+        }
+        if(count_crh==vctVehicle.get_count_wheel()){
+            vctVehicle.set_all_travel_time(0);
+            break;
+        }
+//            cout<<vctVehicle.get_remaining_fuel()<<endl;
 //            cout<<time<<endl;
 //            cout<<length_route<<endl;
 //            cout<<vctVehicle.get_speed()/3600<<endl;
 
     }while(time>0);
 
-    double new_mileage=vctVehicle.get_mileage()+length;
+    double new_mileage=all_mileage+length;
     vctVehicle.set_mileage(new_mileage);
     for(int k=0;k<vctVehicle.get_count_wheel();k++){
-        vctVehicle.ptr_wheel[k].set_all_wheel_mileage(length);
+        vctVehicle.ptr_wheel[k].set_all_wheel_mileage(length+mileage_wheel_vct.at(k));
     }
     return vctVehicle.travel_time;
 }
@@ -243,6 +266,8 @@ int main()
     int flag_track=0;
     int flag_time_track=0;
     int check=0;
+
+    const double pit_wheel=15; //15 секунд время смены колеса
 
     vector<double> travel_time_vct;
     vector<string> vct_name;
@@ -289,6 +314,7 @@ int main()
             for(int j=0;j<vctVehicle.at(i).get_count_wheel();j++){
                     vctVehicle.at(i).ptr_wheel[j].inp_Wheel(j);
                 }
+            vctVehicle.at(i).set_remaining_fuel( vctVehicle.at(i).get_tank_volume());
             clean();
 
         }
@@ -340,15 +366,27 @@ int main()
             }
             if(check==vctVehicle.size()){
                 if(flag_track==1){
-                    travel_time_vct.clear();
-                    vct_name.clear();
                     for(int i=0;i<vctVehicle.size();i++){
                         calculate_passage_section_route(vctVehicle.at(i),length_route);
-                        calculate_remaining_fuel(vctVehicle.at(i),length_route);
+                      //  calculate_remaining_fuel(vctVehicle.at(i),length_route);
                         cout<<"Результаты прохождения первого круга:"<<endl;
                         cout<<"Время прохождения трассы: "<< vctVehicle.at(i).get_travel_time()<<endl;
                         cout<<"Остаток топлива: "<< vctVehicle.at(i).get_remaining_fuel()<<endl;
-                    } //результаты по прохождению 1 круга
+                        //круг закончен проверка сломанных колес
+                        int coun_crh=0;
+                        for(int k=0;k<vctVehicle.at(i).get_count_wheel();k++){
+                            if(vctVehicle.at(i).ptr_wheel[k].get_wheel_condition()==0){
+                                coun_crh++;
+                            }
+                        }
+                        //прибавка к времени  для заезда на питстоп
+                        if(coun_crh>0){
+                                vctVehicle.at(i).set_travel_time(pit_wheel*coun_crh);
+                        }
+                        cout<<"Время с заездом на питстоп : "<< vctVehicle.at(i).get_travel_time()<<endl;
+                        /*!!!Остановился на этом моменте все работает колеса ломаются и транспорт уходит с трассы при поломке всех колес так же прибавляется время для заезда на пит стоп
+                        продолжить смотретьприбавку времени длязаправки и уход с трассы при 0 остатке топлива*/
+                    }
                 }else{
                     cout<<"Для использования функции введите длину трассы!"<<endl;
                 }
@@ -419,3 +457,4 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
