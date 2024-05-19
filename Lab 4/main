@@ -19,6 +19,7 @@ public:
     int get_wheel_condition(){return wheel_condition;}
     double get_wheel_mileage(){return wheel_mileage;}
     void set_wheel_mileage(double length_route){wheel_mileage+=length_route;}
+    void set_all_wheel_mileage(double length_route){wheel_mileage=length_route;}
     Wheel(){cout<<"Колесо добавлено"<<endl;};
     void inp_Wheel(int i);
     void stat_of_wheel();
@@ -198,27 +199,37 @@ double calculate_remaining_fuel(Vehicle& vctVehicle,double length_route){
 }
 
 double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
+    double length=length_route;
+    vctVehicle.calculate_speed();
     double time=length_route/(vctVehicle.get_speed()/3600);
-    while(time>0){
+//    cout<<"Время"<<time<<endl;
+    do{
         //прибавка к пробегу машинки за 1 секунду
         double new_mileage=vctVehicle.get_mileage()+vctVehicle.get_speed()/3600;
         vctVehicle.set_mileage(new_mileage);
         //прибавка к пробегу каждого колеса машинки за 1 секунду и сразу же проверка статуса этого колеса с увеличением пробега
         for(int k=0;k<vctVehicle.get_count_wheel();k++){
-            double wh_milleage=vctVehicle.get_speed()/3600;
-            vctVehicle.ptr_wheel[k].set_wheel_mileage(wh_milleage);
-            vctVehicle.ptr_wheel[k].stat_of_wheel();
+                double wh_milleage=vctVehicle.get_speed()/3600;
+                vctVehicle.ptr_wheel[k].set_wheel_mileage(wh_milleage);
+                vctVehicle.ptr_wheel[k].stat_of_wheel();
         }
-        length_route=length_route-vctVehicle.get_speed()/3600;
-        vctVehicle.travel_time+=1; //считаем время прохождения в секундах
-        //перерасчет скорости
-        vctVehicle.calculate_speed();
-        time=length_route/(vctVehicle.get_speed()/3600);
-        cout<<time<<endl;
-        cout<<length_route<<endl;
-        cout<<vctVehicle.get_speed()/3600<<endl;
-    }
+            length_route=length_route-vctVehicle.get_speed()/3600;
+            vctVehicle.travel_time+=1; //считаем время прохождения в секундах
+            //перерасчет скорости
+            vctVehicle.calculate_speed();
+            time=length_route/(vctVehicle.get_speed()/3600);
+//            cout<<time<<endl;
+//            cout<<length_route<<endl;
+//            cout<<vctVehicle.get_speed()/3600<<endl;
 
+    }while(time>0);
+
+    double new_mileage=vctVehicle.get_mileage()+length;
+    vctVehicle.set_mileage(new_mileage);
+    for(int k=0;k<vctVehicle.get_count_wheel();k++){
+        vctVehicle.ptr_wheel[k].set_all_wheel_mileage(length);
+    }
+    return vctVehicle.travel_time;
 }
 
 int main()
@@ -408,4 +419,3 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
-
