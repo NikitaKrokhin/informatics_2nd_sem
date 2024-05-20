@@ -12,7 +12,7 @@ class Wheel{
     double wheel_mileage;
 public:
     int get_wheel_condition(){return wheel_condition;}
-    int get_wheel_mileage(){return wheel_mileage;}
+    double get_wheel_mileage(){return wheel_mileage;}
     void set_wheel_mileage(double length_route){wheel_mileage+=length_route;}
     Wheel(){cout<<"Колесо добавлено"<<endl;};
     void inp_Wheel(int i);
@@ -34,17 +34,12 @@ void Wheel::inp_Wheel(int i){  //нет возможности использо�
     check_input(wheel_mileage);
 }
 void Wheel::stat_of_wheel(){
+    int stat=0;
+    int start = 0;
+    int end = 5;
     if(wheel_condition){
-        int arr_of_stat[(int)wheel_mileage];
-        int count_0=0;
-        for(int i=0;i<(int)wheel_mileage;i++){
-            int start = 0;
-            int end = 1;
-            arr_of_stat[i] = rand() % (end - start + 1) + start;
-            if(arr_of_stat[i]==0)
-            count_0++;
-        }
-        if(count_0>10){
+        stat=wheel_mileage/100*(rand() % (end - start + 1) + start);
+        if(stat>1){
             wheel_condition=0;
         }
     }
@@ -66,7 +61,6 @@ double Engine::calculate_engine_consumption(){
 }
 
 class Fuel_system{
-
     double remaining_fuel;
 protected:
     int count_gas_stations;
