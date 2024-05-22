@@ -10,6 +10,7 @@ void clean();
 void ignoreLine();
 void check_input(double &param);
 void check_input(int &param);
+void comparison(vector<double>& travel_time_vct, vector<string>& vct_name);
 
 
 class Wheel{
@@ -436,7 +437,34 @@ int main()
                     cin.get();
                     cin.get();
                     clean();
-        }else if(num==5){
+        }else if(num==5){ //!запомнить
+            travel_time_vct.clear();
+            vct_name.clear();
+            for(int g=0;g<vctVehicle.size();g++){
+                travel_time_vct.push_back(vctVehicle.at(g).get_travel_time());
+                vct_name.push_back(vctVehicle.at(g).get_name());
+            }
+            comparison(travel_time_vct,vct_name);
+            vector<string> del_name;
+            for(int i=0;i<vctVehicle.size();i++){
+                if(travel_time_vct.at(i)!=0){
+                    cout<<"Время прохождения трассы автомобилем "<< vct_name.at(i) << endl;
+                    cout<< "Часов:"  <<"\t";
+                    cout<< "Минут:"  <<"\t";
+                    cout<< "Секунд:" << travel_time_vct.at(i) <<endl;
+                }else{
+                    del_name.push_back(vct_name.at(i));
+                }
+            }
+            for(int i=0;i<del_name.size();i++){
+               cout << del_name.at(i) << " СОШЕЛ С ТРАССЫ!"<<endl;
+            }
+
+            del_name.clear();
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+            cin.get();
+            cin.get();
+            clean();
 
         }
         if(num==0){
@@ -496,4 +524,21 @@ void check_input(int &param){
     flag=0;
 }
 
+void comparison(vector<double>& travel_time_vct, vector<string>& vct_name){
+    for(int j=0;j<travel_time_vct.size()-1;++j)
+    {
+        if(travel_time_vct.at(j)>travel_time_vct.at(j+1))
+        {
+            double temp=travel_time_vct.at(j);
+            travel_time_vct.at(j)=travel_time_vct.at(j+1);
+            travel_time_vct.at(j+1)=temp;
 
+            string temp_name;
+            temp_name=vct_name.at(j);
+            vct_name.at(j)=vct_name.at(j+1);
+            vct_name.at(j+1)=temp_name;
+
+            j=0;
+        }
+    }
+}
