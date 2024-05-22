@@ -20,6 +20,7 @@ public:
     double get_wheel_mileage(){return wheel_mileage;}
     void set_wheel_mileage(double length_route){wheel_mileage+=length_route;}
     void set_all_wheel_mileage(double length_route){wheel_mileage=length_route;}
+    void set_wheel_condition(int a){wheel_condition=a;};
     Wheel(){cout<<"Колесо добавлено"<<endl;};
     void inp_Wheel(int i);
     void stat_of_wheel();
@@ -177,17 +178,12 @@ void Wheel::inp_Wheel(int i){
 }
 
 void Wheel::stat_of_wheel(){
+    int stat=0;
+    int start = 0;
+    int end = 5;
     if(wheel_condition){
-        int arr_of_stat[(int)wheel_mileage];
-        int count_0=0;
-        for(int i=0;i<(int)wheel_mileage;i++){
-            int start = 0;
-            int end = 1;
-            arr_of_stat[i] = rand() % (end - start + 1) + start;
-            if(arr_of_stat[i]==0)
-            count_0++;
-        }
-        if(count_0>10){
+        stat=wheel_mileage/100*(rand() % (end - start + 1) + start);
+        if(stat>1){
             wheel_condition=0;
         }
     }
@@ -228,7 +224,11 @@ double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
             vctVehicle.calculate_speed();
             time=length_route/(vctVehicle.get_speed()/3600);
             calculate_remaining_fuel(vctVehicle,vctVehicle.get_speed()/3600);
-
+        //проверка на нулевой остаток топлива
+        if(vctVehicle.get_remaining_fuel()<=0){
+            vctVehicle.set_all_travel_time(0);
+            break;
+        }
         //проверка на поломку всех колес
         count_crh=0;
         for(int k=0;k<vctVehicle.get_count_wheel();k++){
@@ -268,6 +268,7 @@ int main()
     int check=0;
 
     const double pit_wheel=15; //15 секунд время смены колеса
+    const double refueling_time=10; //10 литр в секунду подача топлива в бак
 
     vector<double> travel_time_vct;
     vector<string> vct_name;
@@ -360,32 +361,69 @@ int main()
 
         }else if(num==4){
 
+            vector<int> stat_of_TC;
+            stat_of_TC.clear();
+            stat_of_TC.resize(vctVehicle.size());
+//            cout<<"Размер вектора "<<stat_of_TC.size()<<endl;
             int check=0;
+
             for(int i=0;i<vctVehicle.size();i++){
                 check+=vctVehicle.at(i).get_main_flag();
             }
             if(check==vctVehicle.size()){
                 if(flag_track==1){
-                    for(int i=0;i<vctVehicle.size();i++){
-                        calculate_passage_section_route(vctVehicle.at(i),length_route);
-                      //  calculate_remaining_fuel(vctVehicle.at(i),length_route);
-                        cout<<"Результаты прохождения первого круга:"<<endl;
-                        cout<<"Время прохождения трассы: "<< vctVehicle.at(i).get_travel_time()<<endl;
-                        cout<<"Остаток топлива: "<< vctVehicle.at(i).get_remaining_fuel()<<endl;
-                        //круг закончен проверка сломанных колес
-                        int coun_crh=0;
-                        for(int k=0;k<vctVehicle.at(i).get_count_wheel();k++){
-                            if(vctVehicle.at(i).ptr_wheel[k].get_wheel_condition()==0){
-                                coun_crh++;
+                    flag_time_track=1;
+                    for(int j=0;j<count_laps;j++){
+                        cout<<"\n!!!КРУГ №"<<j+1<<"!!!"<<endl;
+                        for(int i=0;i<vctVehicle.size();i++){
+                            if(stat_of_TC.at(i)!=1){
+                                calculate_passage_section_route(vctVehicle.at(i),length_route);
+                                cout<<"Транспорт "<<vctVehicle.at(i).get_name()<<endl;
+                                cout<<"Результаты прохождения круга:"<<endl;
+                                cout<<"Время прохождения трассы: "<< vctVehicle.at(i).get_travel_time()<<endl;
+                                cout<<"Остаток топлива: "<< vctVehicle.at(i).get_remaining_fuel()<<endl;
+                                //круг закончен проверка сломанных колес
+                                int coun_crh=0;
+                                for(int k=0;k<vctVehicle.at(i).get_count_wheel();k++){
+                                    if(vctVehicle.at(i).ptr_wheel[k].get_wheel_condition()==0){
+                                        coun_crh++;
+                                    }
+                                }
+                                //прибавка к времени  для заезда на питстоп
+                                if(vctVehicle.at(i).get_travel_time()!=0){
+                                    int ex_time1=0;
+                                    int ex_time2=0;
+
+                                    if(coun_crh>0){
+                                            ex_time1=int(pit_wheel*coun_crh);
+                                            for(int k=0;k<vctVehicle.at(i).get_count_wheel();k++){
+                                                if(vctVehicle.at(i).ptr_wheel[k].get_wheel_condition()==0){
+                                                    vctVehicle.at(i).ptr_wheel[k].set_all_wheel_mileage(0);
+                                                }
+                                                vctVehicle.at(i).ptr_wheel[k].set_wheel_condition(1);
+                                            }
+                                    }
+
+                                    if((vctVehicle.at(i).get_tank_volume()-vctVehicle.at(i).get_remaining_fuel())>=(vctVehicle.at(i).get_remaining_fuel())){ //!пересмотреть условие заправки так как прималой дистанции не больше пол бака расходуется
+                                            ex_time2=int((vctVehicle.at(i).get_tank_volume()-vctVehicle.at(i).get_remaining_fuel())*refueling_time);
+                                            vctVehicle.at(i).set_remaining_fuel(vctVehicle.at(i).get_tank_volume());
+                                    }
+
+                                    if(ex_time1>=ex_time2){
+                                        vctVehicle.at(i).set_travel_time(ex_time1);
+                                    }else{
+                                        vctVehicle.at(i).set_travel_time(ex_time2);
+                                    }
+                                    cout<<"Время с заездом на питстоп: "<< vctVehicle.at(i).get_travel_time()<<endl;
+                                }else{
+                                    cout<<"ТС сощел с трассы!"<<endl;//исключения для работы следующего цикла
+                                    stat_of_TC.at(i)=1;
+                                }
+                            }else{
+                                cout<<"Транспорт "<<vctVehicle.at(i).get_name()<<endl;
+                                cout<<"ТС сощел с трассы!"<<endl;
                             }
                         }
-                        //прибавка к времени  для заезда на питстоп
-                        if(coun_crh>0){
-                                vctVehicle.at(i).set_travel_time(pit_wheel*coun_crh);
-                        }
-                        cout<<"Время с заездом на питстоп : "<< vctVehicle.at(i).get_travel_time()<<endl;
-                        /*!!!Остановился на этом моменте все работает колеса ломаются и транспорт уходит с трассы при поломке всех колес так же прибавляется время для заезда на пит стоп
-                        продолжить смотретьприбавку времени длязаправки и уход с трассы при 0 остатке топлива*/
                     }
                 }else{
                     cout<<"Для использования функции введите длину трассы!"<<endl;
@@ -457,4 +495,5 @@ void check_input(int &param){
     }while(flag!=1);
     flag=0;
 }
+
 
