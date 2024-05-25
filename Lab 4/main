@@ -104,42 +104,70 @@ ostream &operator << (ostream &srteam,Vehicle Obj){
 
 istream &operator >> (istream &srteam,Vehicle& Obj){
     string name;
+    Obj.set_main_flag(0);
     double mileage,engine_power,tank_volume; //!здесь поставить перехват
     int count_wheel;
     cout<< "Введите название ТС:"<<endl;
     srteam>>name;
     Obj.set_name(name);
-    cout<< "Введите пробег ТС:"<<endl;
-    srteam>>mileage;
-    Obj.set_mileage(mileage);
-    cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
-    srteam>>engine_power;
-    Obj.set_engine_power(engine_power);
-    cout<< "Введите объем бака ТС (л) "<<name<<endl;
-    srteam>>tank_volume;
-    Obj.set_tank_volume(tank_volume);
-    cout<< "Введите количество колес ТС "<<name<<endl;
-    srteam>>count_wheel;
-    Obj.set_count_wheel(count_wheel);
-    Obj.set_main_flag(1);
-    delete[] Obj.ptr_wheel;
-    Obj.ptr_wheel=new Wheel[Obj.get_count_wheel()];
+        try{
+            cout<< "Введите пробег ТС:"<<endl;
+            srteam>>mileage;
+            if(mileage<0){
+                throw "Пробег не может быть меньше 0";
+            }
+            Obj.set_mileage(mileage);
+            cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
+            srteam>>engine_power;
+            if(engine_power<=0){
+                throw "Мощность двигателя не может быть <= 0";
+            }
+            Obj.set_engine_power(engine_power);
+            cout<< "Введите объем бака ТС (л) "<<name<<endl;
+            srteam>>tank_volume;
+            if(tank_volume<=0){
+                throw "Объем бака не может быть <= 0";
+            }
+            Obj.set_tank_volume(tank_volume);
+            cout<< "Введите количество колес ТС "<<name<<endl;
+            srteam>>count_wheel;
+            if(count_wheel<2){
+                throw "Количество колес не может быть < 2";
+            }
+            Obj.set_count_wheel(count_wheel);
+            Obj.set_main_flag(1);
+            delete[] Obj.ptr_wheel;
+            Obj.ptr_wheel=new Wheel[Obj.get_count_wheel()];
+            Obj.set_main_flag(1);
+        }catch(const char *ex){
+            cout<<ex<<endl;
+            cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+            cin.get();
+            cin.get();
+        }
+
 }
 
 Vehicle::Vehicle(){
-    main_flag=1;
     cout<< "Введите название ТС:"<<endl; //!здесь поставить перехват
     cin>>name;
-    cout<< "Введите пробег ТС:"<<endl;
-    check_input(mileage); //проверка на числовое значение ранспортных средств
-    cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
-    check_input(engine_power);
-    cout<< "Введите объем бака ТС (л) "<<name<<endl;
-    check_input(tank_volume);
-    cout<< "Введите количество колес ТС "<<name<<endl;
-    check_input(count_wheel); //проверка на числовое значение количества колес
-    main_flag=1;
-    ptr_wheel=new Wheel[count_wheel]; //САМАЯ ВАЖНАЯ ТОЧКА ПРОГРАММЫ
+    try{
+        cout<< "Введите пробег ТС:"<<endl;
+        check_input(mileage); //проверка на числовое значение ранспортных средств
+        cout<< "Введите мощность двигателя ТС (ЛС) "<<name<<endl;
+        check_input(engine_power);
+        cout<< "Введите объем бака ТС (л) "<<name<<endl;
+        check_input(tank_volume);
+        cout<< "Введите количество колес ТС "<<name<<endl;
+        check_input(count_wheel); //проверка на числовое значение количества колес
+        main_flag=1;
+        ptr_wheel=new Wheel[count_wheel]; //САМАЯ ВАЖНАЯ ТОЧКА ПРОГРАММЫ
+    }catch(const char *ex){
+        cout<< ex <<endl;
+        cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
+        cin.get();
+        cin.get();
+    }
 }
 
 double Engine::calculate_engine_consumption(){
@@ -301,23 +329,33 @@ int main()
         if(num==1){
             cout << "Введите номер транспорта!" << endl;
             cin >> i;
-            while (cin.fail()) {
-                ignoreLine();
-                cout << "Пожалуйста введите число а не символ!" << endl;
-                cin >> i;
-            }
-            if(i<=vctVehicle.size()&&i>0){
-                i--;
-                cin>>vctVehicle.at(i);
-
-            }else{
-                i--;
-                vctVehicle.push_back(Vehicle());
-            }
-            for(int j=0;j<vctVehicle.at(i).get_count_wheel();j++){
-                    vctVehicle.at(i).ptr_wheel[j].inp_Wheel(j);
+                while (cin.fail()) {
+                    ignoreLine();
+                    cout << "Пожалуйста введите число а не символ!" << endl;
+                    cin >> i;
                 }
-            vctVehicle.at(i).set_remaining_fuel( vctVehicle.at(i).get_tank_volume());
+                if(i<=vctVehicle.size()&&i>0){
+                    i--;
+                    cin>>vctVehicle.at(i);
+
+                }else{
+                    i--;
+                    vctVehicle.push_back(Vehicle());
+                }
+                if(vctVehicle.at(i).get_main_flag()==1){
+                int check_inpwh_all=0;
+                    do{
+                        try{
+                            for(int j=0;j<vctVehicle.at(i).get_count_wheel();j++){
+                                vctVehicle.at(i).ptr_wheel[j].inp_Wheel(j);
+                            }
+                            check_inpwh_all=1;
+                            vctVehicle.at(i).set_remaining_fuel( vctVehicle.at(i).get_tank_volume());
+                        }catch(const char *ex){
+                            cout<< ex <<endl;
+                        }
+                    }while(check_inpwh_all!=1);
+                }
             clean();
 
         }
@@ -329,11 +367,13 @@ int main()
                 cout << "Пожалуйста введите число, а не символ!" << endl;
                 cin >> i;
             }
-
+            if(i<=vctVehicle.size()){
                 clean();
                 i--;
                 cout<<vctVehicle[i];
-
+            }else{
+                cout<<"Такого номера ТС не существует!"<<endl;
+            }
             cout<<"Для возврашения в главное меню нажмите любую клавишу!"<<endl;
             cin.get();
             cin.get();
@@ -512,7 +552,7 @@ void check_input(double &param){
         if(param>=0){
             flag=1;
         }else{
-            cout<<"Повторите ввод,данные невозможны!!!"<<endl;
+            throw "Данные не возможны: число меньше 0! ПОВТОРИТЕ ПОПЫТКУ ВВОДА!";
         }
     }while(flag!=1);
     flag=0;
@@ -524,7 +564,7 @@ void check_input(int &param){
         if(param>1){
             flag=1;
         }else{
-            cout<<"Повторите ввод,данные невозможны!!!"<<endl;
+            throw "Данные не возможны: количество колес меньше 1! ПОВТОРИТЕ ПОПЫТКУ ВВОДА!";
         }
     }while(flag!=1);
     flag=0;
