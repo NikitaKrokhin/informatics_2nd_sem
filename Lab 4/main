@@ -104,7 +104,7 @@ ostream &operator << (ostream &srteam,Vehicle Obj){
 
 istream &operator >> (istream &srteam,Vehicle& Obj){
     string name;
-    double mileage,engine_power,tank_volume;
+    double mileage,engine_power,tank_volume; //!здесь поставить перехват
     int count_wheel;
     cout<< "Введите название ТС:"<<endl;
     srteam>>name;
@@ -128,7 +128,7 @@ istream &operator >> (istream &srteam,Vehicle& Obj){
 
 Vehicle::Vehicle(){
     main_flag=1;
-    cout<< "Введите название ТС:"<<endl;
+    cout<< "Введите название ТС:"<<endl; //!здесь поставить перехват
     cin>>name;
     cout<< "Введите пробег ТС:"<<endl;
     check_input(mileage); //проверка на числовое значение ранспортных средств
@@ -273,6 +273,7 @@ int main()
 
     vector<double> travel_time_vct;
     vector<string> vct_name;
+    vector<double> first_circle_consumption;
 
 
     vector <Vehicle> vctVehicle;
@@ -340,7 +341,7 @@ int main()
         }else if(num==3){
             clean();
             cout<<"Введите количество кругов!"<<endl;
-            cin>>count_laps;
+            cin>>count_laps;  //!здесь поставить перехват
             cout<<"Введите протяженность круга (км)!"<<endl;
             cin>>length_route;
             while (cin.fail()) {
@@ -361,7 +362,7 @@ int main()
             clean();
 
         }else if(num==4){
-
+            vector<int> check_circle (vctVehicle.size());
             vector<int> stat_of_TC;
             stat_of_TC.clear();
             stat_of_TC.resize(vctVehicle.size());
@@ -394,7 +395,7 @@ int main()
                                 if(vctVehicle.at(i).get_travel_time()!=0){
                                     int ex_time1=0;
                                     int ex_time2=0;
-
+                                    //!прибавка времени на смену колеса
                                     if(coun_crh>0){
                                             ex_time1=int(pit_wheel*coun_crh);
                                             for(int k=0;k<vctVehicle.at(i).get_count_wheel();k++){
@@ -404,8 +405,13 @@ int main()
                                                 vctVehicle.at(i).ptr_wheel[k].set_wheel_condition(1);
                                             }
                                     }
-
-                                    if((vctVehicle.at(i).get_tank_volume()-vctVehicle.at(i).get_remaining_fuel())>=(vctVehicle.at(i).get_remaining_fuel())){ //!пересмотреть условие заправки так как прималой дистанции не больше пол бака расходуется
+                                    //!запоминаем расход каждого ТС на первом круге
+                                    if(check_circle.at(i)==0){
+                                        first_circle_consumption.push_back(vctVehicle.at(i).get_tank_volume()-vctVehicle.at(i).get_remaining_fuel());
+                                        check_circle.at(i)=1;
+                                    }
+                                    //!прибавка времени на заправку
+                                    if(first_circle_consumption.at(i)>=(vctVehicle.at(i).get_remaining_fuel())){
                                             ex_time2=int((vctVehicle.at(i).get_tank_volume()-vctVehicle.at(i).get_remaining_fuel())*refueling_time);
                                             vctVehicle.at(i).set_remaining_fuel(vctVehicle.at(i).get_tank_volume());
                                     }
