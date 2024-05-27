@@ -494,10 +494,13 @@ int main()
             vector<string> del_name;
             for(int i=0;i<vctVehicle.size();i++){
                 if(travel_time_vct.at(i)!=0){
+                    int hour=floor(travel_time_vct.at(i)/3600);
+                    int minutes=floor((travel_time_vct.at(i)-hour*3600)/60);
+                    int seconds=travel_time_vct.at(i)-minutes*60-hour*3600;
                     cout<<"Время прохождения трассы автомобилем "<< vct_name.at(i) << endl;
-                    cout<< "Часов:"  <<"\t";
-                    cout<< "Минут:"  <<"\t";
-                    cout<< "Секунд:" << travel_time_vct.at(i) <<endl;
+                    cout<< "Часов: " << hour <<"\t";
+                    cout<< "Минут: "<<  minutes <<"\t";
+                    cout<< "Секунд:" << seconds <<endl;
                 }else{
                     del_name.push_back(vct_name.at(i));
                 }
