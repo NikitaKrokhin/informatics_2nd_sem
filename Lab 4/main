@@ -176,18 +176,19 @@ double Engine::calculate_engine_consumption(){
 }
 
 void Vehicle::calculate_speed(){
-    if(main_flag!=1){
-        count_wheel=1;
-    }
+
     speed=sqrt(engine_power)*fabs(70/(double)count_wheel-2.5);
     int count1=0; //подсчет количества изношенных колес
-    for(int i=0;i<count_wheel;i++){    //!В случае ошибки в скорости проверить это место!
+    for(int i=0;i<count_wheel;i++){
         if(ptr_wheel[i].get_wheel_condition()==0){
             count1++;
         }
     }
-    if(count1>0)
-        speed=speed/(double(4/3*count1));
+    cout<<count1<<endl;
+    if(count1>0){
+        speed=speed*(pow(0.75,count1));
+         cout<<speed/3600<<endl;
+    }
 }
 
 void Wheel::inp_Wheel(int i){
@@ -238,6 +239,16 @@ double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
     double time=length_route/(vctVehicle.get_speed()/3600);
 //    cout<<"Время"<<time<<endl;
     do{
+        vctVehicle.calculate_speed();
+        int sum=0;
+        for(int i=0;i<vctVehicle.get_count_wheel();i++){
+            sum+=vctVehicle.ptr_wheel[i].get_wheel_condition();
+        }
+        cout<<
+            time<<"\t" <<
+            vctVehicle.get_remaining_fuel()<<"\t"<<
+            vctVehicle.get_speed()/3600<<"\t"<<
+            sum<<endl;
         //прибавка к пробегу машинки за 1 секунду
         double new_mileage=vctVehicle.get_mileage()+vctVehicle.get_speed()/3600;
         vctVehicle.set_mileage(new_mileage);
@@ -269,10 +280,9 @@ double calculate_passage_section_route(Vehicle& vctVehicle,double length_route){
             vctVehicle.set_all_travel_time(0);
             break;
         }
-//            cout<<vctVehicle.get_remaining_fuel()<<endl;
-//            cout<<time<<endl;
-//            cout<<length_route<<endl;
-//            cout<<vctVehicle.get_speed()/3600<<endl;
+
+
+
 
     }while(time>0);
 
@@ -411,6 +421,8 @@ int main()
 
             for(int i=0;i<vctVehicle.size();i++){
                 check+=vctVehicle.at(i).get_main_flag();
+                vctVehicle.at(i).set_remaining_fuel(vctVehicle.at(i).get_tank_volume());
+                vctVehicle.at(i).set_all_travel_time(0);
             }
             if(check==vctVehicle.size()){
                 if(flag_track==1){
