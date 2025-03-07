@@ -1,0 +1,89 @@
+#include "Model.hpp"
+
+Model::Model()
+{
+    SDL_Log ("[Model::Model] %p", this);
+}
+
+Model::~Model()
+{
+    SDL_Log ("[Model::Model] %p", this);
+}
+
+SDL_AppResult Model::init()
+{
+    if (!SDL_INIT_VIDEO)
+    {
+        SDL_Log("Couldn't init SDL: %s" , SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
+    if(!SDL_CreateWindowAndRenderer("Model" , 480 , 360 ,0 , &this->window, &this->renderer))
+    {
+        SDL_Log("Couldn't init SDL: %s" , SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+
+    this->initMechanism();
+
+    return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult Model::onEvent(SDL_Event *event)
+{
+    switch (event->type)
+    {
+    case SDL_EVENT_QUIT:
+        return SDL_APP_SUCCESS;
+    }
+
+    return SDL_APP_CONTINUE;
+}
+SDL_AppResult Model::iterate()
+{
+    this->clearWindow();
+
+    this->renderMechanism();
+
+    SDL_RenderPresent(this->renderer);
+    return SDL_APP_CONTINUE;
+}
+
+void Model::clearWindow()
+{
+    SDL_SetRenderDrawColorFloat(this->renderer,0.5f,0.5f,0.5f,SDL_ALPHA_OPAQUE_FLOAT);
+    SDL_RenderClear(this->renderer);
+}
+
+void Model::initMechanism()
+{
+    this->t0 = this->createBaseTexture();
+
+    this->p1={200.0f, 100.0f};
+    this->p2={400.0f, 100.0f};
+}
+
+void Model::renderMechanism()
+{
+    SDL_RenderTexture(this->renderer, this->t0, nullptr, nullptr);
+}
+
+SDL_Texture *Model::createBaseTexture()
+{
+    SDL_Surface *surface = SDL_CreateSurface(100, 100 , SDL_PIXELFORMAT_RGBA32);//Ширина высота цветное изображение
+    SDL_Renderer *renderer = SDL_CreateSoftwareRenderer(surface);
+
+    SDL_FPoint base[4];
+    base[0]=base[3]= {50.0f, 50.0f};
+    base[1]= {10.0f , 90.0f};
+    base[2]= {90.0f, 90.0f};
+
+    SDL_SetRenderDrawColorFloat(renderer, 0.0f, 0.0f, 0.0f, SDL_ALPHA_OPAQUE_FLOAT);
+    SDL_RenderLines(renderer, base , SDL_arraysize(base));
+    SDL_RenderPresent(renderer);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(this->renderer,surface);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroySurface(surface);
+
+    return texture;
+}
