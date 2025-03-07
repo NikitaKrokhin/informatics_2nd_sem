@@ -65,7 +65,12 @@ void Model::initMechanism()
 
 void Model::renderMechanism()
 {
-    SDL_RenderTexture(this->renderer, this->t0, nullptr, nullptr);
+    SDL_FRect r0 = {100.0f, 200.0f , 100.0f, 100.0f};
+    SDL_RenderTexture(this->renderer, this->t0, nullptr, &r0);
+    SDL_FRect r1 = {300.0f, 50.0f, 100.0f, 100.0f};
+    SDL_FPoint c1 = {50.0f, 50.0f};
+    SDL_RenderTextureRotated(this->renderer, this->t0, nullptr,&r1,-90.0, &c1, SDL_FLIP_NONE);
+
 }
 
 SDL_Texture *Model::createBaseTexture()
