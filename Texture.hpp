@@ -7,5 +7,4 @@ struct Texture
     SDL_Texture *texture;
     SDL_FRect rect;
     SDL_FPoint center;
-
 };
