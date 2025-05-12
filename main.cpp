@@ -7,6 +7,7 @@
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
     auto app = new Model;
+
     *appstate = static_cast<void*>(app);
 
     return app->init();
@@ -15,9 +16,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {
     auto app = static_cast<Model*>(appstate);
-    if(app)
+    if (app && event)
     {
-        return app->onEvent(event);
+        return app->onEvent(*event);
     }
     return SDL_APP_FAILURE;
 }
@@ -25,12 +26,12 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
     auto app = static_cast<Model*>(appstate);
-    if(app)
+    if (app)
     {
         return app->iterate();
     }
-    return SDL_APP_FAILURE;
 
+    return SDL_APP_FAILURE;
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
